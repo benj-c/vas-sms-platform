@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class VasTransactionMsg {
 
 	// Parameters from originated SMS
+	private String smsReceivedTime;
 	private String msisdn;
 	private String destPort;
 	private String originalSms;

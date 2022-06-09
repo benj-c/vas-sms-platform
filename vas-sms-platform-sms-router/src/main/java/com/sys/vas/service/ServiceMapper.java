@@ -10,6 +10,9 @@ import org.springframework.integration.support.MessageBuilder;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Service
 @EnableBinding(value = {ServiceCreatorSource.class, CxResponseSource.class})
 @Slf4j
@@ -29,9 +32,11 @@ public class ServiceMapper {
     public void findMappingService(ShortMessage sm) {
         log.info("SMS Received: " + sm.toString());
         VasTransactionMsg srMsg = null;
+        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         try {
             srMsg = keyMatcher.getMatchingAction(sm);
+            srMsg.setSmsReceivedTime(date);
             if (srMsg.getActionId() == -1) {
                 log.info("Incorrect Message");
                 srMsg.setResCode(404);

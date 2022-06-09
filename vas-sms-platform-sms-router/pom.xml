@@ -15,9 +15,6 @@
     <name>vas-sms-platform-sms-router</name>
     <packaging>jar</packaging>
 
-    <properties>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.sys.vas.datamodel</groupId>
