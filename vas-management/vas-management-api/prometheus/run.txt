@@ -1,0 +1,5 @@
+docker run -d --name prometheus --network mycv_net -p 9090:9090 -v C:\Users\chathuras\Downloads\SQA\coursework\mycv-api\prometheus\prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+
+docker run -d --name grafana --network mycv_net -p 3000:3000 grafana/grafana
+
+jmeter -g "C:\Users\chathuras\Downloads\SQA\coursework\mycv-api\jmeter-test\PerformanceTestPlanMemoryThread.jtl" -o C:\Users\chathuras\Downloads\SQA\coursework\mycv-api\jmeter-test\res

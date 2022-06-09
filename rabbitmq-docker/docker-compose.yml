@@ -1,0 +1,11 @@
+version: '3'
+services:
+  rabbitmq3:
+    container_name: rabbitmq3
+    image: rabbitmq:3.8-management-alpine
+    hostname: my-rabbit
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    ports:
+      - '5672:5672'
+      - '15672:15672'

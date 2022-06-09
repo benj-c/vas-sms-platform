@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Properties>
+		<property name="log-file-path">/logs/vas-management-api</property>
+		<Property name="logPattern">%d{ISO8601}{GMT+5:30} |%level|%c{1}|L%L|%X{RequestId}|%m%n</Property>
+	</Properties>
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout>
+				<Pattern>${logPattern}</Pattern>
+			</PatternLayout>
+		</Console>
+		<RollingFile name="mainlog" 
+			fileName="${log-file-path}/vas-management-api-${sys:hostAddress}-${date:yyyy-MM-dd}.log"
+			filePattern="${log-file-path}/archive/vas-management-api-${sys:hostAddress}.%d{yyyy-MM-dd}.%i.log.gz">
+			<PatternLayout>
+				<Pattern>${logPattern}</Pattern>
+			</PatternLayout>
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="20 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Root level="DEBUG" additivity="false">
+			<AppenderRef ref="console" level="INFO" />
+			<AppenderRef ref="mainlog" level="INFO" />
+		</Root>
+	</Loggers>
+</Configuration>
