@@ -24,13 +24,14 @@ const useStyles = createUseStyles({
     }
 })
 
-const ActionPanel = ({ onGraphSave }) => {
+const ActionPanel = ({ onGraphSave, onBuild }) => {
     const classes = useStyles();
 
     return (
         <div className={classes.actionPanel}>
             <ul>
                 <li><i className="ms-Icon ms-Icon--Play"></i></li>
+                <li onClick={onBuild}><i className="ms-Icon ms-Icon--Rocket"></i></li>
                 <li onClick={onGraphSave}><i className="ms-Icon ms-Icon--Save"></i></li>
             </ul>
         </div>

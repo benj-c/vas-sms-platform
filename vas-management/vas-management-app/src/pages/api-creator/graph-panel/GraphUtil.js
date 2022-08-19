@@ -38,7 +38,7 @@ export const validateNodeOnDrop = (elements, node) => {
 
 const createNode = (id, data) => {
     return {
-        id: `n_${id}`,
+        id: `${id}`,
         type: data.type,
         position: data.position,
         data: {
@@ -54,7 +54,7 @@ export const getNode = (data) => {
 
     if (data.title === 'Switch') {
         //create deafault case
-        id += 1;
+        id++;
         let cPos = { x: data.position.x + 150, y: data.position.y - 60 };
         let caseNode = {
             type: 'customNode',
@@ -64,7 +64,7 @@ export const getNode = (data) => {
         }
         nElements.push(createNode(id, caseNode))
         //create deafault default
-        id += 1;
+        id++;
         let dPos = { x: cPos.x, y: cPos.y + 130 };
         let dNode = {
             type: 'customNode',

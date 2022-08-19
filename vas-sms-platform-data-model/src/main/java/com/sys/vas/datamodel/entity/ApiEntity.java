@@ -27,7 +27,8 @@ public class ApiEntity {
     private String name;
 
     @Basic
-    @Column(name = "xml", nullable = true, length = -1, columnDefinition = "LONG")
+    @Column(name = "xml", nullable = true)
+    @Lob
     private String xml;
 
     @Basic

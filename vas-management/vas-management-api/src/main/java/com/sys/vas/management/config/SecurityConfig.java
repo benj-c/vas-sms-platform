@@ -37,11 +37,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/user/create"
     };
 
-    @Autowired
     private JwtFilter jwtFilter;
-
-    @Autowired
     private AuthUserDetailsService authUserDetailsService;
+
+    public SecurityConfig(JwtFilter jwtFilter, AuthUserDetailsService authUserDetailsService) {
+        this.jwtFilter = jwtFilter;
+        this.authUserDetailsService = authUserDetailsService;
+    }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -88,6 +91,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new GrantedAuthorityDefaults("");
     }
 
+    /**
+     *
+     * @return
+     */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

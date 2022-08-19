@@ -59,7 +59,7 @@ public class ResponseExecutor {
             sendSms(srm.getMsisdn(), plainSms, srm.getDestPort(), srm.getCorrelationId(), srm);
         } else {
             ApiEntity apiEntity = apiRepository.findByName(apiName).get();
-            List<CxResponseEntity> ress = cxResponseRepository.findByResCodeAndApiName(resCode, apiEntity);
+            List<CxResponseEntity> ress = cxResponseRepository.findByResCodeAndApi(resCode, apiEntity);
             if (ress.isEmpty()) {
                 log.info(srm.getCorrelationId() + "|No message configured for rescode:" + resCode);
                 return;

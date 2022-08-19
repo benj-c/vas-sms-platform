@@ -20,39 +20,42 @@ class XmlWriter {
         return xml;
     }
     getNodeInitPart(node) {
-        return `<node id="${node.id}" type="${node.data.label}" pos="${this.getPos(node)}">`
+        return `<block id="${node.id}" type="${node.data.label}" pos="${this.getPos(node)}">`
     }
     getNodeNextPart(next) {
         return `<next>${next}</next>`;
     }
     getStartXml(node, next) {
+        if (node.id === "start") {
+            node.id = 0;
+        }
         let xml = this.getNodeInitPart(node);
         xml += this.getNodeNextPart(next)
-        xml += '</node>'
+        xml += '</block>'
         return xml;
     }
     getLogXml(node, next) {
         let xml = this.getNodeInitPart(node);
         xml += this.getNodeNextPart(next)
-        xml += `</node>`
+        xml += `</block>`
         return xml;
     }
     getAssignXml(node, next) {
         let xml = this.getNodeInitPart(node);
         xml += this.getNodeNextPart(next)
-        xml += `</node>`
+        xml += `</block>`
         return xml;
     }
     getFunctionXml(node, next) {
-        let xml = `<node id="${node.id}" type="Function" pos="${this.getPos(node)}">`
+        let xml = `<block id="${node.id}" type="Function" pos="${this.getPos(node)}">`
         xml += `<type>${node.data.label.split(':')[1]}</type>`
         xml += this.getNodeNextPart(next)
-        xml += `</node>`
+        xml += `</block>`
         return xml;
     }
     getSwitchXml() {
-        let xml = '';
-        let switches = this.nodes.filter(f => f.data.label == 'Switch')
+        let xml = ``;
+        let switches = this.nodes.filter(f => f.data.label == 'Branch')
         for (let i = 0; i < switches.length; i++) {
             xml += this.getNodeInitPart(switches[i])
             let sEdges = this.edges.filter(f => f.source == switches[i].id)
@@ -69,14 +72,14 @@ class XmlWriter {
                     xml += `</default>`
                 }
             }
-            xml += '</node>'
+            xml += '</block>'
         }
         return xml;
     }
     write() {
-        let xml = `<process>`;
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        xml += `<service name='${this.flow.name}'>`;
         xml += this.getHeaderXml();
-        xml += `<nodes>`;
 
         for (let i = 0; i < this.edges.length; i++) {
             let ed = this.edges[i];
@@ -105,9 +108,7 @@ class XmlWriter {
             }
         }
         xml += this.getSwitchXml();
-
-        xml += `</nodes>`;
-        xml += `</process>`;
+        xml += "</service>"
         return xml;
     }
 }

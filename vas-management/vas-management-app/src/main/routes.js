@@ -140,14 +140,14 @@ export const routes = [
             icon: "Add"
         },
         menu: [
-            {
-                id: 0,
-                title: "Designer",
-            },
-            {
-                id: 1,
-                title: "Code",
-            },
+            // {
+            //     id: 0,
+            //     title: "Designer",
+            // },
+            // {
+            //     id: 1,
+            //     title: "Code",
+            // },
         ]
     },
     {

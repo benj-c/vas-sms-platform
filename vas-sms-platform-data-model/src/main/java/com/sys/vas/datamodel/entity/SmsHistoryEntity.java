@@ -15,7 +15,7 @@ public class SmsHistoryEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @Basic
     @Column(name = "received_time", nullable = false)

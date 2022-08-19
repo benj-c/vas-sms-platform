@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CxResponseRepository extends JpaRepository<CxResponseEntity, Long> {
 
-    List<CxResponseEntity> findByResCodeAndApiName(int resCode, ApiEntity api);
+    List<CxResponseEntity> findByResCodeAndApi(int resCode, ApiEntity api);
 }

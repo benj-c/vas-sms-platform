@@ -46,3 +46,8 @@ export const apiOfApiCreatorAtom = atom({
     key: 'apiOfApiCreator',
     default: 0,
 })
+
+export const updateTopBarSubTitleAtom = atom({
+    key: 'updateTopBarSubTitle',
+    default: null,
+})

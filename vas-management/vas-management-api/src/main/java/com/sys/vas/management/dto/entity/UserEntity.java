@@ -12,7 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 public class UserEntity {
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "ID", nullable = false)
     private Integer id;

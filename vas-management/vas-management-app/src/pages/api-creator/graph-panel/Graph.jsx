@@ -15,7 +15,9 @@ import { validateConnection, validateNodeOnDrop, getNode } from './GraphUtil'
 import XmlWriter from './XmlWriter'
 import useBoolean from "../../../common/hooks/useBoolean";
 import { getPropComponent } from './GraphNodePanel'
-import { getApiByApiId } from "../../../common/ApiHandler"
+import { getApiByApiId, updateApi } from "../../../common/ApiHandler"
+import CodeViewer from "../CodeViewer";
+import { toJsonGraph } from "../../../common/AppUtils"
 
 const useStyles = createUseStyles({
     graphPanel: {
@@ -43,37 +45,26 @@ const nodeTypes = {
     returnNode: ReturnNode,
 }
 
-const Graph = ({ initialElements, flow }) => {
+
+const Graph = ({ graphElements, api }) => {
     const classes = useStyles();
     const graphWrapper = useRef(null);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
-    const [elements, setElements] = useState([]);
+    const [elements, setElements] = useState(graphElements);
     const [graphMsg, setGraphMsg] = useState(null);
     const [selectedNode, setSelectedNode] = useState(null);
     const handleType = useRef('')
     const { value: isPanelOpen, toggle: togglePanel, } = useBoolean(false);
-    const [currentApi, setCurrentApi] = useState(null);
+    const { value: isCodeViwerOpen, toggle: toggleCodeViewerPanel, } = useBoolean(false);
+    const [currentApi, setCurrentApi] = useState(api);
     //recoil states
     const removedEdge = useRecoilValue(removedEdgeAtom)
     const [processedXml, setProcessedXml] = useRecoilState(processedXmlAtom);
     const apiId = useRecoilValue(apiOfApiCreatorAtom)
 
-    useEffect(() => {
-        if (apiId !== 0) {
-            getApiByApiId(apiId).then(res => {
-                setCurrentApi(res.data);
-            })
-                .catch(e => { })
-                .finally(() => { })
-        }
-
-    }, [apiId])
-
-
     const onLoad = useCallback((rfi) => {
         if (!reactFlowInstance) {
             setReactFlowInstance(rfi)
-            setElements(initialElements)
             console.log('Flow Loaded');
         }
     }, [reactFlowInstance])
@@ -112,21 +103,30 @@ const Graph = ({ initialElements, flow }) => {
         event.dataTransfer.dropEffect = 'move';
     };
 
+    const toXml = () => {
+        let _flow = reactFlowInstance.toObject();
+        let nodeArr = [], edgeArr = [];
+        for (let i = 0; i < _flow.elements.length; i++) {
+            let e = _flow.elements[i]
+            if (isNode(e)) {
+                nodeArr.push(e);
+            } else {
+                edgeArr.push(e);
+            }
+        }
+        return new XmlWriter(currentApi, nodeArr, edgeArr).write()
+    }
+
     const onGraphSave = useCallback(() => {
         if (reactFlowInstance) {
-            let _flow = reactFlowInstance.toObject();
-            let nodeArr = [], edgeArr = [];
-            for (let i = 0; i < _flow.elements.length; i++) {
-                let e = _flow.elements[i]
-                if (isNode(e)) {
-                    nodeArr.push(e);
-                } else {
-                    edgeArr.push(e);
-                }
-            }
-            console.log(currentApi)
-            let xml = new XmlWriter(currentApi, nodeArr, edgeArr).write()
+            let xml = toXml();
             setProcessedXml(xml)
+            let apiData = { ...currentApi, xml: xml };
+            updateApi(apiData).then(res => {
+
+            })
+                .catch(e => { })
+                .finally(() => { })
         }
     }, [currentApi])
 
@@ -134,14 +134,15 @@ const Graph = ({ initialElements, flow }) => {
         if (elements.length == 2) return 1;
         let mx = -1;
         for (let i = 0; i < elements.length; i++) {
-            if (isNode(elements[i]) && elements[i].id.includes('_')) {
-                let id = Number(elements[i].id.split('_')[1])
-                if (id > mx) {
-                    mx = id;
-                }
+            if (isNode(elements[i])) {
+                let id = isNaN(elements[i].id) ? 0 : elements[i].id;
+                console.log({ id, mx })
+                mx = Math.max(id, mx)
             }
         }
-        return mx + 1;
+        mx++;
+        console.log({ mx })
+        return mx;
     }
 
     const onDrop = (event) => {
@@ -189,13 +190,18 @@ const Graph = ({ initialElements, flow }) => {
 
     const onNodeDataChange = data => {
         let node = elements.filter(n => n.id == data.id)[0]
-        console.log(data)
-        console.log(node)
+        console.log({ node, data })
     }
 
     const getForm = useCallback((node) => {
         let Comp = getPropComponent(node.data.label)
         return <Comp node={node} onNodeDataChange={onNodeDataChange} />
+    }, [elements])
+
+    const onGraphBuild = useCallback(() => {
+        let xml = toXml();
+        setProcessedXml(xml)
+        toggleCodeViewerPanel();
     }, [elements])
 
     return (
@@ -216,7 +222,7 @@ const Graph = ({ initialElements, flow }) => {
                 onElementClick={onElementClick}
                 onPaneClick={onPaneClick}
             >
-                <ActionPanel onGraphSave={onGraphSave} />
+                <ActionPanel onGraphSave={onGraphSave} onBuild={onGraphBuild} />
                 <Controls />
                 <Background color="#aaa" gap={16} />
             </ReactFlow>
@@ -238,8 +244,18 @@ const Graph = ({ initialElements, flow }) => {
                     {getForm(selectedNode)}
                 </Panel>
             )}
+
+            <Panel
+                headerText={`CODE`}
+                isOpen={isCodeViwerOpen}
+                onDismiss={toggleCodeViewerPanel}
+                closeButtonAriaLabel="Close"
+                type={PanelType.medium}
+            >
+                <CodeViewer />
+            </Panel>
         </div>
     )
 }
 
-export default memo(Graph);
+export default Graph;

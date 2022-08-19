@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Callout, IconButton, Persona, PersonaPresence, PersonaSize, PrimaryButton } from "@fluentui/react";
 import { createUseStyles } from 'react-jss';
+import { useRecoilValue } from "recoil";
 //app
 import { routes } from "./routes";
 import { get } from "../common/Storage";
@@ -10,6 +11,7 @@ import { logOut } from "../common/AppUtils"
 import TopBarMenu from "./TopBarMenu";
 import Search from './Search';
 import useTheme from "../common/hooks/useTheme"
+import { updateTopBarSubTitleAtom } from "../state/atoms"
 
 const useStyles = createUseStyles({
     topBar: {
@@ -56,6 +58,7 @@ const TopBar = (props) => {
     const [user, setUser] = useState(get('user'));
     const [isCalloutVisible, toggleIsCalloutVisible] = useState(false);
     const { theme, toggleTheme, isDarkTheme } = useTheme();
+    const topBarPageSubTitle = useRecoilValue(updateTopBarSubTitleAtom);
 
     //get nav object from routes array and put it in currentNav state var
     //this changes when location is changed
@@ -76,7 +79,10 @@ const TopBar = (props) => {
             {currentNav && (
                 <>
                     <div className={classes.left}>
-                        <span>{currentNav.description}</span>
+                        <span>
+                            {currentNav.description}
+                            {topBarPageSubTitle ? topBarPageSubTitle : ''}
+                        </span>
                         <TopBarMenu menu={currentNav.menu} />
                     </div>
                     <Search />

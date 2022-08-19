@@ -73,3 +73,11 @@ a {
 .react-flow__node.selected div[class*='nodeInner'] {
   border: 1px solid var(--themePrimary);
 }
+
+.show-t {
+  display: block;
+}
+
+.hide-t {
+  display: none;
+}

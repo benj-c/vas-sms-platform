@@ -18,4 +18,8 @@ public class SmsHistoryService {
     public List<SmsHistoryEntity> getHistoryByMsisdn(String msisdn) {
         return historyRepository.findByMsisdnOrderByIdDesc(msisdn);
     }
+
+    public void save() {
+
+    }
 }

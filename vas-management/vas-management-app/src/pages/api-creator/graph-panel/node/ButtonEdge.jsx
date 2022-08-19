@@ -1,5 +1,5 @@
 //lib
-import { getBezierPath, getEdgeCenter, getMarkerEnd } from 'react-flow-renderer'
+import { getSmoothStepPath, getEdgeCenter, getMarkerEnd } from 'react-flow-renderer'
 import { useRecoilState } from 'recoil';
 import { createUseStyles } from "react-jss";
 //app
@@ -25,7 +25,7 @@ const useStyles = createUseStyles({
 const foreignObjectSize = 40;
 
 const ButtonEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, data, arrowHeadType, markerEndId }) => {
-    const edgePath = getBezierPath({
+    const edgePath = getSmoothStepPath ({
         sourceX,
         sourceY,
         sourcePosition,

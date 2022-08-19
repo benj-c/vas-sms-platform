@@ -1,14 +1,30 @@
 //lib
-import { useEffect } from "react";
+import { useEffect, useCallback, memo, useState } from "react";
 import { createUseStyles } from "react-jss";
 import { ReactFlowProvider } from "react-flow-renderer"
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useLocation } from "react-router-dom";
 //app
-import { selectedTopBarMenuAtom, apiOfApiCreatorAtom } from "../../state/atoms"
+import { apiOfApiCreatorAtom, updateTopBarSubTitleAtom } from "../../state/atoms"
 import GraphNodePanel from "./graph-panel/GraphNodePanel";
 import Graph from "./graph-panel/Graph";
-import CodeViewer from "./CodeViewer";
+import { getApiByApiId } from "../../common/ApiHandler"
+import { toJsonGraph } from "../../common/AppUtils"
+
+const initialElements = [
+    {
+        id: 'start',
+        type: 'startNode',
+        data: { label: 'Start' },
+        position: { x: 25, y: 225 },
+    },
+    {
+        id: 'return',
+        type: 'returnNode',
+        data: { label: 'Return' },
+        position: { x: 1025, y: 225 },
+    },
+];
 
 const useStyles = createUseStyles({
     graphEditorRoot: {
@@ -20,46 +36,44 @@ const useStyles = createUseStyles({
     },
 })
 
-const initialElements = [
-    {
-        id: 'start',
-        type: 'startNode',
-        data: { label: 'Start' },
-        position: { x: 25, y: 25 },
-    },
-    {
-        id: 'return',
-        type: 'returnNode',
-        data: { label: 'Return' },
-        position: { x: 425, y: 25 },
-    },
-];
-
 const ApiCreator = () => {
     const classes = useStyles();
     const location = useLocation();
-    const selectedMenu = useRecoilValue(selectedTopBarMenuAtom);
+    const [graphElements, setGraphElements] = useState([]);
     const [selectedApi, setSelectedApi] = useRecoilState(apiOfApiCreatorAtom);
+    const [topBarSubTitle, setTopBarSubTitle] = useRecoilState(updateTopBarSubTitleAtom);
 
     useEffect(() => {
         let apiId = Number(new URLSearchParams(location.search).get('ref'));
-        setSelectedApi(apiId);
-    }, [location])
-
-    const ApiDesigner = () => (
-        <div className={classes.graphEditorRoot}>
-            <ReactFlowProvider>
-                <GraphNodePanel />
-                <Graph initialElements={initialElements} />
-            </ReactFlowProvider>
-        </div>
-    )
+        let isApiSubscribed = true;
+        getApiByApiId(apiId).then(res => {
+            if (isApiSubscribed) {
+                setSelectedApi(res.data);
+                let json = toJsonGraph(res.data.xml)
+                setGraphElements(initialElements);
+                setTopBarSubTitle(
+                    <>&nbsp;&#x2022;&nbsp;{res.data.name}&nbsp;&#x2022;&nbsp;{`v${res.data.version}`}</>
+                );
+            }
+        })
+            .catch(e => { })
+            .finally(() => { })
+        return () => {
+            // cancel the subscription
+            isApiSubscribed = false;
+            setTopBarSubTitle(null);
+        };
+    }, [])
 
     return (
-        <>
-            {selectedMenu.title === "Designer" && <ApiDesigner />}
-            {selectedMenu.title === "Code" && <CodeViewer />}
-        </>
+        <div className={classes.graphEditorRoot}>
+            {graphElements.length > 0 && (
+                <ReactFlowProvider>
+                    <GraphNodePanel />
+                    <Graph graphElements={graphElements} api={selectedApi} />
+                </ReactFlowProvider>
+            )}
+        </div>
     )
 }
 

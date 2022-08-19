@@ -14,7 +14,7 @@ const CORE_NODES = [
     },
     {
         id: 1,
-        title: 'Switch',
+        title: 'Branch',
         type: 'customNode',
         icon: 'BranchFork2',
         propsComponent: () => <div>Switch</div>,
@@ -79,10 +79,12 @@ const useStyles = createUseStyles({
         overflowY: 'auto',
         '& ul': {
             paddingRight: '0.25rem',
+            marginBottom: '1rem',
             '& h3': {
                 textTransform: 'uppercase',
-                paddingBottom: '0.25rem',
-                marginBottom: '1rem',
+                marginBottom: '0.5rem',
+                fontSize: '0.75rem',
+                fontWeight: 600,
                 borderBottom: '1px solid var(--themePrimary)'
             },
             '& li': {

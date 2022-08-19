@@ -5,6 +5,7 @@ import com.sys.vas.management.dto.ResponseCodes;
 import com.sys.vas.management.dto.UserRoles;
 import com.sys.vas.management.dto.entity.ApiEntity;
 import com.sys.vas.management.dto.request.CreateApiRequestDto;
+import com.sys.vas.management.dto.request.UpdateApiDto;
 import com.sys.vas.management.service.ApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -97,6 +98,33 @@ public class ApiController {
             return ResponseEntity.ok(response);
         } finally {
             log.info("Completed|getApiById|ProcessingTime:{}ms", System.currentTimeMillis() - startTime);
+        }
+    }
+
+    /**
+     * @param updateApiDto
+     * @return
+     */
+    @PutMapping(
+            path = "/api",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @RolesAllowed(UserRoles.USER)
+    public ResponseEntity<Response> updateApi(
+            @Valid @RequestBody UpdateApiDto updateApiDto
+    ) {
+        long startTime = System.currentTimeMillis();
+        log.info("Initiating|updateApi");
+        log.info("ReqBody|{}", updateApiDto.toString());
+        try {
+            long id = this.apiService.update(updateApiDto);
+            Response response = Response.success(id)
+                    .build(ResponseCodes.OPERATION_SUCCESS);
+            log.info("Res|{}", response.toString());
+            return ResponseEntity.ok(response);
+        } finally {
+            log.info("Completed|updateApi|ProcessingTime:{}ms", System.currentTimeMillis() - startTime);
         }
     }
 

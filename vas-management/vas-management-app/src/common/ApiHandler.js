@@ -110,6 +110,13 @@ export const createApi = async (data) => {
         body: JSON.stringify(data),
     });
 }
+export const updateApi = async (data) => {
+    return await _fetch({
+        url: `/api`,
+        method: HttpMethod.PUT,
+        body: JSON.stringify(data),
+    });
+}
 export const getCxResponsesByApiId = async (api_id) => {
     return await _fetch({
         url: `/api/${api_id}/cx-responses`,

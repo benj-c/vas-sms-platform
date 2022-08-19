@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -48,6 +49,7 @@ public class UserController {
     public ResponseEntity<Response> doAuthenticate(
             @Valid @RequestBody UserCredentialsRequestDto userCredentialsRequestDto
     ) throws JoseException {
+        System.out.println(BCrypt.hashpw(userCredentialsRequestDto.getPassword(), BCrypt.gensalt()));
         long startTime = System.currentTimeMillis();
         log.info("Initiating|doAuthenticate");
         log.info("ReqBody|{}", userCredentialsRequestDto.toString());

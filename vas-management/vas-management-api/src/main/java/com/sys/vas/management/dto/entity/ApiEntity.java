@@ -15,7 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class ApiEntity {
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
     private Long id;
