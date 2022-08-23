@@ -104,9 +104,10 @@ export const toJsonGraph = (xml) => {
         for (let i = 0; i < blocks.length; i++) {
             let blk = blocks[i];
             if (blk.getAttribute("type") === "Branch") {
+                nodes.push(createNodeByTag(blk, blk.getAttribute("id")));
                 let cases = blk.getElementsByTagName("case");
                 for (let j = 0; j < cases.length; j++) {
-                    nodes.push(createNodeByTag(cases[j], blk.getAttribute("id")));
+                    nodes.push(createNodeByTag(cases[j], cases[j].getAttribute("id")));
                 }
                 let defaultCase = blk.getElementsByTagName("default");
                 if (defaultCase && defaultCase[0]) {
@@ -116,7 +117,6 @@ export const toJsonGraph = (xml) => {
                 nodes.push(createNodeByTag(blk, blk.getAttribute("id")));
             }
         }
-        console.log(nodes)
         return {
             nodes,
             edges,
