@@ -1,5 +1,5 @@
 //lib
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Panel, PanelType } from "@fluentui/react";
 import ReactFlow, { Background, Controls, addEdge, removeElements, updateEdge, isNode } from "react-flow-renderer"
 import { createUseStyles } from "react-jss";
@@ -15,9 +15,8 @@ import { validateConnection, validateNodeOnDrop, getNode } from './GraphUtil'
 import XmlWriter from './XmlWriter'
 import useBoolean from "../../../common/hooks/useBoolean";
 import { getPropComponent } from './GraphNodePanel'
-import { getApiByApiId, updateApi } from "../../../common/ApiHandler"
+import { updateApi } from "../../../common/ApiHandler"
 import CodeViewer from "../CodeViewer";
-import { toJsonGraph } from "../../../common/AppUtils"
 
 const useStyles = createUseStyles({
     graphPanel: {
@@ -45,32 +44,44 @@ const nodeTypes = {
     returnNode: ReturnNode,
 }
 
-
-const Graph = ({ graphElements, api }) => {
+const Graph = () => {
     const classes = useStyles();
     const graphWrapper = useRef(null);
+    const handleType = useRef('')
+
+    //state
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
-    const [elements, setElements] = useState(graphElements);
+    const [elements, setElements] = useState([]);
     const [graphMsg, setGraphMsg] = useState(null);
     const [selectedNode, setSelectedNode] = useState(null);
-    const handleType = useRef('')
     const { value: isPanelOpen, toggle: togglePanel, } = useBoolean(false);
     const { value: isCodeViwerOpen, toggle: toggleCodeViewerPanel, } = useBoolean(false);
-    const [currentApi, setCurrentApi] = useState(api);
+
     //recoil states
     const removedEdge = useRecoilValue(removedEdgeAtom)
     const [processedXml, setProcessedXml] = useRecoilState(processedXmlAtom);
-    const apiId = useRecoilValue(apiOfApiCreatorAtom)
+    const graphApi = useRecoilValue(apiOfApiCreatorAtom)
+
+    useEffect(() => {
+        let subs = true;
+        if (subs) {
+            console.log(graphApi.graphElements.edges)
+            setElements((es) => es.concat(graphApi.graphElements.nodes)
+                .concat(graphApi.graphElements.edges)
+            );
+        }
+        return () => {
+            subs = false;
+        }
+    }, [graphApi])
 
     const onLoad = useCallback((rfi) => {
         if (!reactFlowInstance) {
-            setReactFlowInstance(rfi)
-            console.log('Flow Loaded');
+            setReactFlowInstance(rfi);
         }
     }, [reactFlowInstance])
 
     const onConnect = useCallback((params) => {
-        console.log('onConnect', params);
         if (handleType.current !== 'target') {
             let validated = validateConnection(elements, params)
             if (!validated) {
@@ -88,7 +99,6 @@ const Graph = ({ graphElements, api }) => {
     }
 
     const onElementsRemove = useCallback((elementsToRemove) => {
-        console.log('onElementsRemove', elementsToRemove);
         setElements((els) => removeElements(elementsToRemove, els))
     }, []);
 
@@ -114,21 +124,21 @@ const Graph = ({ graphElements, api }) => {
                 edgeArr.push(e);
             }
         }
-        return new XmlWriter(currentApi, nodeArr, edgeArr).write()
+        return new XmlWriter(graphApi, nodeArr, edgeArr).write()
     }
 
-    const onGraphSave = useCallback(() => {
+    const onGraphSave = () => {
         if (reactFlowInstance) {
             let xml = toXml();
             setProcessedXml(xml)
-            let apiData = { ...currentApi, xml: xml };
+            let apiData = { ...graphApi, xml: xml };
             updateApi(apiData).then(res => {
 
             })
                 .catch(e => { })
                 .finally(() => { })
         }
-    }, [currentApi])
+    }
 
     const getNextNodeId = () => {
         if (elements.length == 2) return 1;
@@ -199,9 +209,11 @@ const Graph = ({ graphElements, api }) => {
     }, [elements])
 
     const onGraphBuild = useCallback(() => {
-        let xml = toXml();
-        setProcessedXml(xml)
-        toggleCodeViewerPanel();
+        if (reactFlowInstance) {
+            let xml = toXml();
+            setProcessedXml(xml)
+            toggleCodeViewerPanel();
+        }
     }, [elements])
 
     return (

@@ -5,11 +5,11 @@ export const validateConnection = (elements, conn) => {
     let targetEle = elements.filter(e => e.id === conn.target)[0]
     if (sourceEle && targetEle) {
         let source = sourceEle.data.label, target = targetEle.data.label;
-        if (source === 'Switch' && !(target === 'Case' || target === 'Default')) {
-            return 'Warn: Switch node can only be connected to a Case/Default node'
+        if (source === 'Branch' && !(target === 'Case' || target === 'Default')) {
+            return 'Warn: Branch node can only be connected to a Case/Default node'
         }
-        if ((target === 'Case' || target === 'Default') && source !== 'Switch') {
-            return 'Warn: Source node of Case/Default must be a Switch'
+        if ((target === 'Case' || target === 'Default') && source !== 'Branch') {
+            return 'Warn: Source node of Case/Default must be a Branch'
         }
         //validate conn count
         let ins = getIncomers(sourceEle, elements).length;
@@ -19,7 +19,7 @@ export const validateConnection = (elements, conn) => {
             return "Warn: Start node can only have one output connection"
         }
         if ((source === 'Case' || source === 'Default') && (outs > 0 && ins > 0)) {
-            return "Warn: Switch Case/Default nodes can only have one input/output connection"
+            return "Warn: Branch Case/Default nodes can only have one input/output connection"
         }
         if ((source === 'Assign' || source === 'Log' || source.startsWith('Function')) && outs > 0) {
             return "Warn: " + source + " node can only have one output connection"
@@ -52,7 +52,7 @@ export const getNode = (data) => {
     let id = data.id, nElements = [];
     nElements.push(createNode(id, data));
 
-    if (data.title === 'Switch') {
+    if (data.title === 'Branch') {
         //create deafault case
         id++;
         let cPos = { x: data.position.x + 150, y: data.position.y - 60 };
@@ -75,4 +75,53 @@ export const getNode = (data) => {
         nElements.push(createNode(id, dNode))
     }
     return nElements;
+}
+
+export const toJsonGraph = (xml) => {
+    let nodes = [], edges = [];
+
+    const createNodeByTag = (tag, id) => {
+        let p = tag.getAttribute("pos").split(",");
+        return {
+            id: id,
+            type: tag.getAttribute("nodeCType"),
+            data: {
+                label: tag.getAttribute("type")
+            },
+            position: { x: p[0], y: p[1] }
+        }
+    }
+
+    const getEdges = () => {
+
+    }
+
+    try {
+        let parser = new DOMParser();
+        let xmlDoc = parser.parseFromString(xml, "text/xml");
+        let blocks = xmlDoc.getElementsByTagName("block");
+        edges = JSON.parse(xmlDoc.getElementsByTagName("conn")[0]?.textContent || "[]");
+        for (let i = 0; i < blocks.length; i++) {
+            let blk = blocks[i];
+            if (blk.getAttribute("type") === "Branch") {
+                let cases = blk.getElementsByTagName("case");
+                for (let j = 0; j < cases.length; j++) {
+                    nodes.push(createNodeByTag(cases[j], blk.getAttribute("id")));
+                }
+                let defaultCase = blk.getElementsByTagName("default");
+                if (defaultCase && defaultCase[0]) {
+                    nodes.push(createNodeByTag(defaultCase[0], defaultCase[0].getAttribute("id")));
+                }
+            } else {
+                nodes.push(createNodeByTag(blk, blk.getAttribute("id")));
+            }
+        }
+        console.log(nodes)
+        return {
+            nodes,
+            edges,
+        }
+    } catch (e) {
+        console.log(e)
+    }
 }

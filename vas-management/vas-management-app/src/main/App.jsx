@@ -21,21 +21,11 @@ const useStyles = createUseStyles({
             transform: 'translateY(0)',
         }
     },
-    layout: {
-        height: '100vh',
-        background: '#26272b'
-    },
-    container: {
-        display: 'grid',
-        gridTemplateColumns: '4% 96%'
-    },
     pageContainer: {
         overflowY: 'hidden',
         position: 'relative',
     },
     pageWrapper: {
-        overflowY: 'auto',
-        height: 'calc(100vh - var(--topBarHeight))',
         animation: '$animateUp 0.2s forwards',
     },
 })
@@ -71,28 +61,19 @@ const App = () => {
 
     const renderLoading = () => <div>Loading...</div>
 
-    const MainLayout = () => (
-        <main className={`${classes.layout} ${isLoggedIn() ? classes.container : ''}`}>
-            {isLoggedIn() && <SideBar />}
+    const MainLayout = (props) => (
+        <main
+            style={{
+                height: '100vh',
+                background: '#26272b',
+                display: 'grid',
+                gridTemplateColumns: isLoggedIn() ? '4% 96%' : '100%'
+            }}
+        >
+            {isLoggedIn() && props.sidebar}
             <section className={classes.pageContainer}>
-                {isLoggedIn() && <TopBar />}
-                <Switch>
-                    {routes.map((route, i) => (
-                        <Route
-                            key={i}
-                            path={route.path}
-                            exact={route.exact}
-                            render={props => (
-                                <div className={classes.pageWrapper}>
-                                    <Suspense fallback={renderLoading()}>
-                                        {resolveComponent(props, route)}
-                                    </Suspense>
-                                </div>
-                            )}
-                        />
-                    ))}
-                    <Redirect to="/404" />
-                </Switch>
+                {isLoggedIn() && props.topbar}
+                {props.main}
             </section>
         </main>
     )
@@ -101,7 +82,33 @@ const App = () => {
         <RecoilRoot>
             <ThemeProvider theme={theme}>
                 <Router>
-                    <MainLayout />
+                    <MainLayout
+                        sidebar={<SideBar />}
+                        topbar={<TopBar />}
+                        main={
+                            <Switch>
+                                {routes.map((route, i) => (
+                                    <Route
+                                        key={i}
+                                        path={route.path}
+                                        exact={route.exact}
+                                        render={props => (
+                                            <div style={{
+                                                overflowY: isLoggedIn() ? 'auto' : 'hidden',
+                                            }}
+                                                className={classes.pageWrapper}
+                                            >
+                                                <Suspense fallback={renderLoading()}>
+                                                    {resolveComponent(props, route)}
+                                                </Suspense>
+                                            </div>
+                                        )}
+                                    />
+                                ))}
+                                <Redirect to="/404" />
+                            </Switch>
+                        }
+                    />
                 </Router>
             </ThemeProvider>
         </RecoilRoot>

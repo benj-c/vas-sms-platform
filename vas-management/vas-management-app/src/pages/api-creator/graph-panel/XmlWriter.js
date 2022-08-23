@@ -12,7 +12,7 @@ class XmlWriter {
         return this.edges.filter(e => e.source === id)[0]
     }
     getPos(node) {
-        return `${node.position.x}:${node.position.y}`;
+        return `${node.position.x},${node.position.y}`;
     }
     getHeaderXml() {
         let xml = `<name>${this.flow.name}</name>`;
@@ -20,10 +20,10 @@ class XmlWriter {
         return xml;
     }
     getNodeInitPart(node) {
-        return `<block id="${node.id}" type="${node.data.label}" pos="${this.getPos(node)}">`
+        return `<block id="${node.id}" type="${node.data.label}" nodeCType="${node.type}" pos="${this.getPos(node)}">`
     }
     getNodeNextPart(next) {
-        return `<next>${next}</next>`;
+        return `<next-node>${next}</next-node>`;
     }
     getStartXml(node, next) {
         if (node.id === "start") {
@@ -63,11 +63,11 @@ class XmlWriter {
                 let nd = this.getNodeById(sEdges[j].target)
                 let ed = this.getEdgeBySourceId(sEdges[j].target)
                 if (nd.data.label === 'Case') {
-                    xml += `<case id="${j}" pos="${this.getPos(nd)}">`
+                    xml += `<case id="${nd.id}" type="Case" nodeCType="customNode" pos="${this.getPos(nd)}">`
                     xml += this.getNodeNextPart(ed.target)
                     xml += `</case>`
                 } else {
-                    xml += `<default pos="${this.getPos(nd)}">`
+                    xml += `<default id="${nd.id}" type="default" nodeCType="customNode" pos="${this.getPos(nd)}">`
                     xml += this.getNodeNextPart(ed.target)
                     xml += `</default>`
                 }
@@ -76,10 +76,16 @@ class XmlWriter {
         }
         return xml;
     }
+    getReturnXml(node) {
+        let xml = this.getNodeInitPart(node);
+        xml += '<outputparams name="ses">-1</outputparams>';
+        xml += '</block>';
+        return xml;
+    }
     write() {
         let xml = '<?xml version="1.0" encoding="UTF-8"?>';
         xml += `<service name='${this.flow.name}'>`;
-        xml += this.getHeaderXml();
+        // xml += this.getHeaderXml();
 
         for (let i = 0; i < this.edges.length; i++) {
             let ed = this.edges[i];
@@ -108,6 +114,8 @@ class XmlWriter {
             }
         }
         xml += this.getSwitchXml();
+        xml += this.getReturnXml(this.nodes.filter(n => n.id === "return")[0]);
+        xml += `<conn>${JSON.stringify(this.edges)}</conn>`
         xml += "</service>"
         return xml;
     }

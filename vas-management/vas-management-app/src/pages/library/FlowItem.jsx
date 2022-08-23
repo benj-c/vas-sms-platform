@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+//lib
+import { Persona, PersonaPresence, PersonaSize } from "@fluentui/react";
 import { createUseStyles } from "react-jss";
-import { getRandomColor } from "../../common/AppUtils"
+//app
 
 const useFlowItemStyles = createUseStyles({
     flowItem: {
@@ -18,28 +19,9 @@ const useFlowItemStyles = createUseStyles({
         },
     },
     flowItemHeader: {
-        display: 'grid',
-        gridTemplateColumns: '20% 80%',
         marginBottom: '0.75rem',
-        justifyContent: 'center',
-        alignItems: 'center',
         '& span': {
-            padding: '0.25rem',
-            fontSize: '1.1rem',
-            borderRadius: '0.2rem',
-            height: '2rem',
-            width: '2rem',
-            lineHeight: '2rem',
-            textAlign: 'center',
-            textTransform: 'uppercase',
-            // background: getRandomColor(),
-            background: 'var(--themePrimary)',
-        },
-        '& h4': {
-            fontSize: '1.1rem',
-            fontWeight: '500',
-            textTransform: 'capitalize',
-            color: '#cccccc',
+            color: "#fff"
         }
     }
 })
@@ -52,11 +34,13 @@ const FlowItem = ({ flow, onSelect }) => {
             {flow && (
                 <article className={classes.flowItem} onClick={() => onSelect(flow)}>
                     <div className={classes.flowItemHeader}>
-                        <span>{flow.name?.substring(0, 2)}</span>
-                        <div>
-                            <h4>{flow.name}</h4>
-                            <small>{flow.active ? 'Active' : 'Inactive'}</small>
-                        </div>
+                        <Persona
+                            initialsColor={`var(--themePrimary)`}
+                            size={PersonaSize.size40}
+                            text={flow.name}
+                            secondaryText={flow.active ? 'Active' : 'Inactive'}
+                            presence={flow.active ? PersonaPresence.online : PersonaPresence.busy}
+                        />
                     </div>
                     <span>{flow.description}</span>
                 </article>

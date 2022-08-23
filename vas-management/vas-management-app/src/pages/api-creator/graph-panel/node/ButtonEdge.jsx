@@ -11,14 +11,14 @@ const useStyles = createUseStyles({
         border: '1px solid #fff',
         borderRadius: '50%',
         cursor: 'pointer',
-        fontSize: '12px',
+        fontSize: '7px',
+        fontWeight: 'bold',
         height: '20px',
-        // lineHeight: '1',
         width: '20px',
         '&:hover': {
             color: '#fff',
             background: 'rgb(255, 0, 0)',
-        }
+        },
     },
 })
 
@@ -73,7 +73,7 @@ const ButtonEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, ta
                         onClick={(event) => onEdgeClick(event, id)}
                         title="Remove this edge"
                     >
-                        ×
+                        &#9587;
                     </button>
                 </body>
             </foreignObject>

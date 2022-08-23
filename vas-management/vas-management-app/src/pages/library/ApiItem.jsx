@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { Persona, PersonaPresence, PersonaSize } from "@fluentui/react";
 import { createUseStyles } from "react-jss";
-import { getRandomColor } from "../../common/AppUtils"
 
 const useStyles = createUseStyles({
     apiItem: {
@@ -18,28 +17,9 @@ const useStyles = createUseStyles({
         },
     },
     apiItemHeader: {
-        display: 'grid',
-        gridTemplateColumns: '20% 80%',
         marginBottom: '0.75rem',
-        justifyContent: 'center',
-        alignItems: 'center',
         '& span': {
-            padding: '0.25rem',
-            fontSize: '1.1rem',
-            borderRadius: '0.2rem',
-            height: '2rem',
-            width: '2rem',
-            lineHeight: '2rem',
-            textAlign: 'center',
-            textTransform: 'uppercase',
-            // background: getRandomColor(),
-            background: 'var(--themePrimary)',
-        },
-        '& h4': {
-            fontSize: '1.1rem',
-            fontWeight: '500',
-            textTransform: 'capitalize',
-            color: '#cccccc',
+            color: "#fff"
         }
     }
 })
@@ -52,11 +32,12 @@ const ApiItem = ({ api, onSelect }) => {
             {api && (
                 <article className={classes.apiItem} onClick={() => onSelect(api)}>
                     <div className={classes.apiItemHeader}>
-                        <span>{api.name?.substring(0, 2)}</span>
-                        <div>
-                            <h4>{api.name}</h4>
-                            <small>Version: {api.version}</small>
-                        </div>
+                    <Persona
+                            initialsColor={`var(--themePrimary)`}
+                            size={PersonaSize.size40}
+                            text={api.name}
+                            secondaryText={`Version: ${api.version}`}
+                        />
                     </div>
                     <span>{api.description}</span>
                 </article>

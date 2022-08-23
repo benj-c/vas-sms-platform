@@ -23,11 +23,6 @@ export const removedEdgeAtom = atom({
     default: null,
 })
 
-export const showSnackBarAtom = atom({
-    key: 'ShowSnackBar',
-    default: null,
-})
-
 export const processedXmlAtom = atom({
     key: 'ProcessedXmlAtom',
     default: null,
@@ -44,7 +39,7 @@ export const selectedActionAtom = atom({
 })
 export const apiOfApiCreatorAtom = atom({
     key: 'apiOfApiCreator',
-    default: 0,
+    default: null,
 })
 
 export const updateTopBarSubTitleAtom = atom({

@@ -30,17 +30,3 @@ export const randomNumber = max => {
 export const getRandomColor = () => {
     return COLORS[randomNumber(COLORS.length)];
 }
-
-export const toJsonGraph = (xml) => {
-    let nodes = [], edges = [], data = [];
-    try {
-        let parser = new DOMParser();
-        let xmlDoc = parser.parseFromString(xml, "text/xml");
-        let blocks = xmlDoc.getElementsByTagName("block");
-        for (let i = 0; i <= blocks.length; i++) {
-            console.log(blocks[i])
-        }
-    } catch (e) {
-        console.log(e)
-    }
-}

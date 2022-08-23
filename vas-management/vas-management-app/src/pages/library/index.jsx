@@ -3,7 +3,7 @@ import { createUseStyles } from "react-jss";
 import { useRecoilValue } from "recoil";
 //app
 import { selectedTopBarMenuAtom } from "../../state/atoms"
-import FlowContainer from "./FlowContainer";
+import ServiceContainer from "./ServiceContainer";
 import ApiContainer from "./ApiContainer";
 
 const useStyles = createUseStyles({
@@ -19,7 +19,7 @@ const Library = () => {
 
     return (
         <div className={classes.pageRoot}>
-            {selectedMenu.title === "Services" ? <FlowContainer /> : <ApiContainer />}
+            {selectedMenu.title === "Services" ? <ServiceContainer /> : <ApiContainer />}
         </div>
     )
 }

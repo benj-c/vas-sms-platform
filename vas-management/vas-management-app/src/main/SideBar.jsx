@@ -6,7 +6,6 @@ import { useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from 'recoil'
 //app
 import { routes } from "./routes";
-import AppIcon from "./AppIcon";
 import { showSideBarNavAtom, resetSideBarAtom, selectedActionAtom } from '../state/atoms'
 
 const useStyles = createUseStyles({
@@ -29,7 +28,7 @@ const useStyles = createUseStyles({
     },
     logo: {
         marginTop: '0.75rem',
-        marginBottom: '1rem',
+        marginBottom: '0.25rem',
     },
     topNavs: {
         width: '100%'
@@ -89,7 +88,6 @@ const SideBar = () => {
     const [selectedNav, setSelectedNav] = useState();
     const [_routes, setRoutes] = useState(routes.filter(r => !r.sideBarProps.hidden));
     const visibleSideNavItem = useRecoilValue(showSideBarNavAtom);
-    const resetSideBar = useRecoilValue(resetSideBarAtom);
     const [selectedAction, setSelectedAction] = useRecoilState(selectedActionAtom);
 
     useEffect(() => {
@@ -139,7 +137,7 @@ const SideBar = () => {
         <aside>
             <nav className={classes.sideNav}>
                 <span className={classes.logo}>
-                    <AppIcon />
+                    <img src='/logo192.png' height="20" width="20" />
                 </span>
                 <ul className={classes.topNavs}>
                     {_routes.length > 0 && _routes.filter(n => n.sideBarProps.pos === "top").map((item, i) => (

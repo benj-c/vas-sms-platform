@@ -7,6 +7,7 @@ import com.sys.vas.management.dto.request.CreateApiRequestDto;
 import com.sys.vas.management.dto.request.UpdateApiDto;
 import com.sys.vas.management.exception.ApiException;
 import com.sys.vas.management.repository.ApiRepository;
+import com.sys.vas.management.util.ApiUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +18,11 @@ import java.util.List;
 public class ApiService {
 
     private ApiRepository apiRepository;
+    private SysActionLogService sysActionLogService;
 
-    ApiService(ApiRepository apiRepository) {
+    ApiService(ApiRepository apiRepository, SysActionLogService sysActionLogService) {
         this.apiRepository = apiRepository;
+        this.sysActionLogService = sysActionLogService;
     }
 
     public List<ApiEntity> getAllApis() {
@@ -32,7 +35,8 @@ public class ApiService {
         apiEntity.setDescription(requestDto.getDescription());
         apiEntity.setVersion(requestDto.getVersion());
 
-        return apiRepository.save(apiEntity).getId();
+        long id = apiRepository.save(apiEntity).getId();
+        return id;
     }
 
     public ApiEntity getApiById(long id) {
@@ -57,7 +61,9 @@ public class ApiService {
             fApi.setXml(updateApiDto.getXml());
         }
 
-        return apiRepository.save(fApi).getId();
+        long id = apiRepository.save(fApi).getId();
+        sysActionLogService.logEvent("API " + fApi.getName() + " was updated by " + ApiUtil.getAuthUserName());
+        return id;
     }
 
 }
