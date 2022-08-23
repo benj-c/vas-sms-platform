@@ -14,7 +14,6 @@ export const validateConnection = (elements, conn) => {
         //validate conn count
         let ins = getIncomers(sourceEle, elements).length;
         let outs = getOutgoers(sourceEle, elements).length;
-        console.log(ins, outs)
         if (source === 'Start' && outs > 0) {
             return "Warn: Start node can only have one output connection"
         }

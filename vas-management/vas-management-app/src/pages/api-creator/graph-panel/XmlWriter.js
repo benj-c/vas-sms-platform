@@ -1,6 +1,5 @@
 class XmlWriter {
     constructor(currentApi, nodes, edges) {
-        console.log(currentApi)
         this.flow = currentApi;
         this.nodes = nodes;
         this.edges = edges;
@@ -47,7 +46,7 @@ class XmlWriter {
         return xml;
     }
     getFunctionXml(node, next) {
-        let xml = `<block id="${node.id}" type="Function" pos="${this.getPos(node)}">`
+        let xml = `<block id="${node.id}" type="func" nodeCType="customNode" pos="${this.getPos(node)}">`
         xml += `<type>${node.data.label.split(':')[1]}</type>`
         xml += this.getNodeNextPart(next)
         xml += `</block>`

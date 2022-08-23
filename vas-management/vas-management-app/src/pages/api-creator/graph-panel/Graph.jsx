@@ -1,6 +1,6 @@
 //lib
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Panel, PanelType } from "@fluentui/react";
+import { Panel, PanelType, Text } from "@fluentui/react";
 import ReactFlow, { Background, Controls, addEdge, removeElements, updateEdge, isNode } from "react-flow-renderer"
 import { createUseStyles } from "react-jss";
 import { useRecoilValue, useRecoilState } from 'recoil'
@@ -22,15 +22,22 @@ const useStyles = createUseStyles({
     graphPanel: {
         height: '100%',
         border: '1px dashed rgba(255, 255, 255, 0.4)',
+        position: 'relative'
     },
     stats: {
         fontFamily: 'monospace',
         paddingTop: '0.25rem',
         color: 'yellow',
+        position: 'absolute',
+        top: '0rem',
+        right: '0.5rem',
+        textAlign: 'right'
     },
-    graphStats: {
-        float: 'right',
-        paddingRight: '1rem',
+    apiDetail: {
+        paddingTop: '0.25rem',
+        position: 'absolute',
+        top: '0rem',
+        left: '0.5rem',
     }
 })
 
@@ -65,7 +72,7 @@ const Graph = () => {
     useEffect(() => {
         let subs = true;
         if (subs) {
-            console.log(graphApi.graphElements.edges)
+            console.log(graphApi.graphElements.nodes)
             setElements((es) => es.concat(graphApi.graphElements.nodes)
                 .concat(graphApi.graphElements.edges)
             );
@@ -146,7 +153,6 @@ const Graph = () => {
         for (let i = 0; i < elements.length; i++) {
             if (isNode(elements[i])) {
                 let id = isNaN(elements[i].id) ? 0 : elements[i].id;
-                console.log({ id, mx })
                 mx = Math.max(id, mx)
             }
         }
@@ -216,6 +222,10 @@ const Graph = () => {
         }
     }, [elements])
 
+    const getNodeCount = () => {
+        return elements.filter(e => isNode(e)).length;
+    }
+
     return (
         <div className={classes.graphPanel} ref={graphWrapper}>
             <ReactFlow
@@ -238,11 +248,18 @@ const Graph = () => {
                 <Controls />
                 <Background color="#aaa" gap={16} />
             </ReactFlow>
+
+            <div className={classes.apiDetail}>
+                <Text variant="medium">{graphApi.name}</Text>,&nbsp;&nbsp;
+                <Text variant="medium">v{graphApi.version}</Text>
+            </div>
+
             <div className={classes.stats}>
-                <p>
-                    {graphMsg && <span className={classes.graphMsg}>{graphMsg}</span>}
-                    <span className={classes.graphStats}>Nodes: {elements.length}</span>
-                </p>
+                <small>
+                    Nodes: {getNodeCount()}
+                    <br />
+                    {graphMsg && <>{graphMsg}</>}
+                </small>
             </div>
 
             {selectedNode && (

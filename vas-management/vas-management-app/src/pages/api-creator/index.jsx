@@ -1,6 +1,6 @@
 //lib
 import { useEffect, useCallback, memo, useState } from "react";
-import { Panel, PanelType, Persona, PersonaPresence, PersonaSize, Text } from "@fluentui/react";
+import { IconButton, Link, Panel, PanelType, Persona, PersonaPresence, PersonaSize, Text, TooltipHost } from "@fluentui/react";
 import { createUseStyles } from "react-jss";
 import { ReactFlowProvider } from "react-flow-renderer"
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -35,8 +35,8 @@ const useStyles = createUseStyles({
     graphEditorRoot: {
         display: 'grid',
         gridTemplateColumns: '10% 90%',
-        gap: '1rem',
-        height: '88vh',
+        gap: '0.5rem',
+        height: '89vh',
         padding: '1rem',
     },
     infoPanelBody: {
@@ -54,7 +54,8 @@ const ApiCreator = () => {
     const [selectedApi, setSelectedApi] = useRecoilState(apiOfApiCreatorAtom);
     const [topBarSubTitle, setTopBarSubTitle] = useRecoilState(updateTopBarSubTitleAtom);
     const menu = useRecoilValue(selectedTopBarMenuAtom)
-    const { value: isInfoPanelOpen, toggle: toggleInfoPanel, } = useBoolean(false);
+    const { value: isInfoPanelOpen, toggle: toggleInfoPanel, } = useBoolean(true);
+    const { value: isUpdateInfoPanelOpen, toggle: toggleUpdateInfoPanel, } = useBoolean(false);
 
     useEffect(() => {
         let urlParams = new URLSearchParams(location.search);
@@ -66,11 +67,10 @@ const ApiCreator = () => {
                 let { nodes, edges } = toJsonGraph(res.data.xml)
                 let graphElements = (nodes.length > 0 || edges.length > 0) ? { nodes, edges } : initialElements;
                 let d = { ...res.data, graphElements };
-                // console.log(d)
                 setSelectedApi(d);
-                setTopBarSubTitle(
-                    <>&nbsp;&#x2022;&nbsp;{res.data.name}&nbsp;&#x2022;&nbsp;{`v${res.data.version}`}</>
-                );
+                // setTopBarSubTitle(
+                //     <>&nbsp;&#x2022;&nbsp;{res.data.name}&nbsp;&#x2022;&nbsp;{`v${res.data.version}`}</>
+                // );
             }
         })
             .catch(e => { })
@@ -85,7 +85,7 @@ const ApiCreator = () => {
 
     useEffect(() => {
         if (menu.title === "Info") {
-            toggleInfoPanel();
+            // toggleInfoPanel();
         }
     }, [menu])
 
@@ -108,16 +108,47 @@ const ApiCreator = () => {
                     headerText="Service Information"
                 >
                     <div className={classes.infoPanelBody}>
-                        <div>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '86vh'
+                        }}>
                             <Persona
+                                initialsColor={`var(--themePrimary)`}
                                 text={selectedApi.name}
-                                secondaryText={selectedApi.description}
                                 size={PersonaSize.size56}
-                                hidePersonaDetails={false}
-                                presence={PersonaPresence.none}
+                                hidePersonaDetails
                             />
+                            <br />
+                            <Text variant="xLarge">{selectedApi.name}</Text>
+                            <Text variant="mediumPlus">{selectedApi.description}</Text>
+                            <br />
+                            <TooltipHost content="Edit service details" id={"ss_settings"}>
+                                <IconButton
+                                    aria-describedby={"ss_settings"}
+                                    iconProps={{ iconName: 'Settings' }}
+                                    title="Emoji"
+                                    ariaLabel="Emoji"
+                                    onClick={toggleUpdateInfoPanel}
+                                />
+                            </TooltipHost>
                         </div>
                         <div></div>
+                    </div>
+                </Panel>
+            }
+
+            {selectedApi &&
+                <Panel
+                    isOpen={isUpdateInfoPanelOpen}
+                    onDismiss={toggleUpdateInfoPanel}
+                    closeButtonAriaLabel="Close"
+                    headerText="Edit Service Information"
+                >
+                    <div style={{ color: '#e7e7e7' }}>
+
                     </div>
                 </Panel>
             }

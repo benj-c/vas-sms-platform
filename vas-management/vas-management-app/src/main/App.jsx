@@ -94,7 +94,7 @@ const App = () => {
                                         exact={route.exact}
                                         render={props => (
                                             <div style={{
-                                                overflowY: isLoggedIn() ? 'auto' : 'hidden',
+                                                overflowY: isLoggedIn() ? 'hidden' : 'hidden',
                                             }}
                                                 className={classes.pageWrapper}
                                             >
