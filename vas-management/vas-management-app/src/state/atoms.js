@@ -46,3 +46,8 @@ export const updateTopBarSubTitleAtom = atom({
     key: 'updateTopBarSubTitle',
     default: null,
 })
+
+export const apiUpdateEventAtom = atom({
+    key: 'apiUpdateEvent',
+    default: null,
+})

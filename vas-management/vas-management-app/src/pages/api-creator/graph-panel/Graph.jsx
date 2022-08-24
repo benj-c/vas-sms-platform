@@ -2,7 +2,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Panel, PanelType, Text } from "@fluentui/react";
 import ReactFlow, { Background, Controls, addEdge, removeElements, updateEdge, isNode } from "react-flow-renderer"
-import { createUseStyles } from "react-jss";
 import { useRecoilValue, useRecoilState } from 'recoil'
 //app
 import ActionPanel from './ActionPanel'
@@ -10,36 +9,13 @@ import ButtonEdge from "./node/ButtonEdge";
 import CustomNode from "./node/CustomNode";
 import StartNode from "./node/StartNode";
 import ReturnNode from "./node/ReturnNode";
-import { removedEdgeAtom, processedXmlAtom, apiOfApiCreatorAtom } from '../../../state/atoms'
+import { removedEdgeAtom, processedXmlAtom, apiOfApiCreatorAtom, apiUpdateEventAtom } from '../../../state/atoms'
 import { validateConnection, validateNodeOnDrop, getNode } from './GraphUtil'
 import XmlWriter from './XmlWriter'
 import useBoolean from "../../../common/hooks/useBoolean";
 import { getPropComponent } from './GraphNodePanel'
 import { updateApi } from "../../../common/ApiHandler"
 import CodeViewer from "../CodeViewer";
-
-const useStyles = createUseStyles({
-    graphPanel: {
-        height: '100%',
-        border: '1px dashed rgba(255, 255, 255, 0.4)',
-        position: 'relative'
-    },
-    stats: {
-        fontFamily: 'monospace',
-        paddingTop: '0.25rem',
-        color: 'yellow',
-        position: 'absolute',
-        top: '0rem',
-        right: '0.5rem',
-        textAlign: 'right'
-    },
-    apiDetail: {
-        paddingTop: '0.25rem',
-        position: 'absolute',
-        top: '0rem',
-        left: '0.5rem',
-    }
-})
 
 const edgeTypes = {
     buttonedge: ButtonEdge,
@@ -52,7 +28,6 @@ const nodeTypes = {
 }
 
 const Graph = () => {
-    const classes = useStyles();
     const graphWrapper = useRef(null);
     const handleType = useRef('')
 
@@ -68,18 +43,13 @@ const Graph = () => {
     const removedEdge = useRecoilValue(removedEdgeAtom)
     const [processedXml, setProcessedXml] = useRecoilState(processedXmlAtom);
     const graphApi = useRecoilValue(apiOfApiCreatorAtom)
+    const [apiUpdateEvent, setapiUpdateEventAtom] = useRecoilState(apiUpdateEventAtom);
 
     useEffect(() => {
-        let subs = true;
-        if (subs) {
-            console.log(graphApi.graphElements.nodes)
-            setElements((es) => es.concat(graphApi.graphElements.nodes)
-                .concat(graphApi.graphElements.edges)
-            );
-        }
-        return () => {
-            subs = false;
-        }
+        // let elemns = [...graphApi.graphElements.nodes, ...graphApi.graphElements.edges];
+        let elemns = [].concat(graphApi.graphElements.nodes).concat(graphApi.graphElements.edges)
+        console.log(elemns);
+        setElements(elemns);
     }, [graphApi])
 
     const onLoad = useCallback((rfi) => {
@@ -119,47 +89,6 @@ const Graph = () => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
     };
-
-    const toXml = () => {
-        let _flow = reactFlowInstance.toObject();
-        let nodeArr = [], edgeArr = [];
-        for (let i = 0; i < _flow.elements.length; i++) {
-            let e = _flow.elements[i]
-            if (isNode(e)) {
-                nodeArr.push(e);
-            } else {
-                edgeArr.push(e);
-            }
-        }
-        return new XmlWriter(graphApi, nodeArr, edgeArr).write()
-    }
-
-    const onGraphSave = () => {
-        if (reactFlowInstance) {
-            let xml = toXml();
-            setProcessedXml(xml)
-            let apiData = { ...graphApi, xml: xml };
-            updateApi(apiData).then(res => {
-
-            })
-                .catch(e => { })
-                .finally(() => { })
-        }
-    }
-
-    const getNextNodeId = () => {
-        if (elements.length == 2) return 1;
-        let mx = -1;
-        for (let i = 0; i < elements.length; i++) {
-            if (isNode(elements[i])) {
-                let id = isNaN(elements[i].id) ? 0 : elements[i].id;
-                mx = Math.max(id, mx)
-            }
-        }
-        mx++;
-        console.log({ mx })
-        return mx;
-    }
 
     const onDrop = (event) => {
         event.preventDefault();
@@ -209,6 +138,48 @@ const Graph = () => {
         console.log({ node, data })
     }
 
+    const toXml = () => {
+        let _flow = reactFlowInstance.toObject();
+        let nodeArr = [], edgeArr = [];
+        for (let i = 0; i < _flow.elements.length; i++) {
+            let e = _flow.elements[i]
+            if (isNode(e)) {
+                nodeArr.push(e);
+            } else {
+                edgeArr.push(e);
+            }
+        }
+        return new XmlWriter(graphApi, nodeArr, edgeArr).write()
+    }
+
+    const onGraphSave = () => {
+        if (reactFlowInstance) {
+            let xml = toXml();
+            setProcessedXml(xml)
+            let apiData = { ...graphApi, xml: xml };
+            delete apiData.graphElements;
+            updateApi(apiData).then(res => {
+                setapiUpdateEventAtom(apiData)
+            })
+                .catch(e => { })
+                .finally(() => { })
+        }
+    }
+
+    const getNextNodeId = () => {
+        if (elements.length == 2) return 1;
+        let mx = -1;
+        for (let i = 0; i < elements.length; i++) {
+            if (isNode(elements[i])) {
+                let id = isNaN(elements[i].id) ? 0 : elements[i].id;
+                mx = Math.max(id, mx)
+            }
+        }
+        mx++;
+        console.log({ mx })
+        return mx;
+    }
+
     const getForm = useCallback((node) => {
         let Comp = getPropComponent(node.data.label)
         return <Comp node={node} onNodeDataChange={onNodeDataChange} />
@@ -226,8 +197,44 @@ const Graph = () => {
         return elements.filter(e => isNode(e)).length;
     }
 
+    const ApiDetail = () => (
+        <div style={{
+            paddingTop: '0.25rem',
+            position: 'absolute',
+            top: '0rem',
+            left: '0.5rem',
+        }}>
+            <Text variant="medium">{graphApi.name}</Text>,&nbsp;&nbsp;
+            <Text variant="medium">v{graphApi.version}</Text>
+        </div>
+    )
+
+    const GraphStat = () => (
+        <div style={{
+            fontFamily: 'monospace',
+            paddingTop: '0.25rem',
+            color: 'yellow',
+            position: 'absolute',
+            top: '0rem',
+            right: '0.5rem',
+            textAlign: 'right'
+        }}>
+            <small>
+                Nodes: {getNodeCount()}
+                <br />
+                {graphMsg && <>{graphMsg}</>}
+            </small>
+        </div>
+    )
+
     return (
-        <div className={classes.graphPanel} ref={graphWrapper}>
+        <div
+            ref={graphWrapper}
+            style={{
+                height: '100%',
+                border: '1px dashed rgba(255, 255, 255, 0.4)',
+                position: 'relative'
+            }}>
             <ReactFlow
                 elements={elements}
                 edgeTypes={edgeTypes}
@@ -249,18 +256,8 @@ const Graph = () => {
                 <Background color="#aaa" gap={16} />
             </ReactFlow>
 
-            <div className={classes.apiDetail}>
-                <Text variant="medium">{graphApi.name}</Text>,&nbsp;&nbsp;
-                <Text variant="medium">v{graphApi.version}</Text>
-            </div>
-
-            <div className={classes.stats}>
-                <small>
-                    Nodes: {getNodeCount()}
-                    <br />
-                    {graphMsg && <>{graphMsg}</>}
-                </small>
-            </div>
+            <ApiDetail />
+            <GraphStat />
 
             {selectedNode && (
                 <Panel

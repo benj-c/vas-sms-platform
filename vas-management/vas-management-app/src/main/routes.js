@@ -142,11 +142,11 @@ export const routes = [
         menu: [
             {
                 id: 0,
-                title: "Info",
+                title: "Details",
             },
             {
                 id: 1,
-                title: "Code",
+                title: "Designer",
             },
         ]
     },
