@@ -52,11 +52,9 @@ const Graph = () => {
         setElements(elemns);
     }, [graphApi])
 
-    const onLoad = useCallback((rfi) => {
-        if (!reactFlowInstance) {
-            setReactFlowInstance(rfi);
-        }
-    }, [reactFlowInstance])
+    const onLoad = (rfi) => {
+        setReactFlowInstance(rfi);
+    }
 
     const onConnect = useCallback((params) => {
         if (handleType.current !== 'target') {
@@ -159,6 +157,7 @@ const Graph = () => {
             let apiData = { ...graphApi, xml: xml };
             delete apiData.graphElements;
             updateApi(apiData).then(res => {
+                setElements([]);
                 setapiUpdateEventAtom(apiData)
             })
                 .catch(e => { })
