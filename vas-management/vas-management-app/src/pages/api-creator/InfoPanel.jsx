@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { DefaultButton, DetailsList, DetailsListLayoutMode, FocusTrapCallout, IconButton, Panel, Persona, PersonaSize, SelectionMode, Text, TooltipHost } from "@fluentui/react";
+import { DefaultButton, DetailsList, DetailsListLayoutMode, FocusTrapCallout, IconButton, Panel, Persona, PersonaSize, PrimaryButton, SelectionMode, Stack, Text, TooltipHost } from "@fluentui/react";
 import { createUseStyles } from "react-jss";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { useHistory } from "react-router-dom";
 
 import useBoolean from "../../common/hooks/useBoolean";
 import { apiOfApiCreatorAtom, apiUpdateEventAtom, selectedTopBarMenuAtom } from "../../state/atoms"
 import UpdateApiForm from "../../common/forms/UpdateApiForm"
-import { getApiVersionsByApiId } from "../../common/ApiHandler"
+import { getApiVersionsByApiId, deployApi } from "../../common/ApiHandler"
 
 const useStyles = createUseStyles({
     infoPanelBody: {
@@ -42,6 +43,7 @@ const InfoPanel = () => {
     const { value: isUpdateInfoPanelOpen, toggle: toggleUpdateInfoPanel, } = useBoolean(false);
 
     const ApiVersionsPanel = () => {
+        const history = useHistory();
         const { value: isCalloutVisible, toggle: toggleIsCalloutVisible, } = useBoolean(false);
         const [selectedApiVersion, setSelectedApiVersion] = useState(null);
 
@@ -93,7 +95,12 @@ const InfoPanel = () => {
                 isResizable: false,
                 onRender: (item) => {
                     return (
-                        <span>{item.isActive ? 'Active' : 'Inactive'}</span>
+                        <span style={{ 
+                            color: item.isActive ? 'var(--themePrimary)' : '',
+                            fontWeight: item.isActive ? 600 : 200
+                        }}>
+                            {item.isActive ? 'Active' : 'Inactive'}
+                        </span>
                     )
                 }
             },
@@ -143,8 +150,16 @@ const InfoPanel = () => {
             })
         }
 
-        const gotoDesigner = () => {
-            // updateMenu();
+        const onDeploy = () => {
+            deployApi(selectedApiVersion.apiId, selectedApiVersion.commitId).then(res => {
+                toggleIsCalloutVisible();
+                loadApis();
+                history.push(`/api-creator?ref=${selectedApiVersion.apiId}&commit=${selectedApiVersion.commitId}`)
+            }).catch(e => {
+
+            }).finally(() => {
+                setApisLoading(true);
+            })
         }
 
         return (
@@ -168,9 +183,16 @@ const InfoPanel = () => {
                         gapSpace={0}
                         target={`#btn_${selectedApiVersion.id}`}
                         onDismiss={toggleIsCalloutVisible}
-                        setInitialFocus
                     >
-
+                        <div style={{ color: '#e7e7e7', padding: '1rem', border: '1px solid var(--themePrimary)' }}>
+                            <Text block variant="mediumPlus">API Deployment</Text>
+                            <Text block variant="small">Deploy this API as the active API, Note that currently deployed API will be disabled once this API is deployed</Text>
+                            <br />
+                            <Stack gap={8} horizontal>
+                                <PrimaryButton onClick={onDeploy}>Deploy</PrimaryButton>
+                                <DefaultButton onClick={toggleIsCalloutVisible}>Cancel</DefaultButton>
+                            </Stack>
+                        </div>
                     </FocusTrapCallout>
                 )}
             </>
@@ -200,8 +222,8 @@ const InfoPanel = () => {
                         <br />
                         <Text variant="xLarge">{graphApi.name}</Text>
                         <Text variant="mediumPlus">{graphApi.description}</Text>
-                        <br />
-                        <Text variant="small">v{graphApi.version} - {graphApi.isActive ? 'Active' : 'Inactive'}</Text>
+                        {/* <br /> */}
+                        {/* <Text variant="small">v{graphApi.version} - {graphApi.isActive ? 'Active' : 'Inactive'}</Text> */}
                         <br />
                         <TooltipHost content="Edit service details" id={"ss_settings"}>
                             <IconButton
@@ -216,7 +238,7 @@ const InfoPanel = () => {
                     <div style={{
                         textAlign: 'center',
                         position: 'relative',
-                        top: '40%'
+                        top: '40%',
                     }}>
                         <Text variant="small">Commit ID</Text>
                         <br />

@@ -15,6 +15,7 @@ import com.sys.vas.management.repository.ApiRepository;
 import com.sys.vas.management.util.ApiUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -122,6 +123,16 @@ public class ApiService {
      * @return
      */
     public List<ApiHistoryVersionDto> getApiVersionsById(Long id) {
-        return apiHistoryRepository.findAllByApiId(id);
+        return apiHistoryRepository.findAllByApi(id);
+    }
+
+    /**
+     *
+     * @param apiId
+     * @param commitId
+     */
+    @Transactional
+    public void deploy(long apiId, String commitId) {
+        apiHistoryRepository.updateApiSetActive(apiId, commitId);
     }
 }

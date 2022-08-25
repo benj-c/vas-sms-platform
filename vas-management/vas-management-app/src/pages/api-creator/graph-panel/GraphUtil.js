@@ -108,7 +108,7 @@ export const toJsonGraph = (xml) => {
                     id: "start",
                     type: blk.getAttribute("nodeCType"),
                     data: {
-                        label: "Start"
+                        label: "start"
                     },
                     position: { x: p[0], y: p[1] }
                 })

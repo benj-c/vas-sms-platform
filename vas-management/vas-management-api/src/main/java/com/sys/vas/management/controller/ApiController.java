@@ -183,4 +183,32 @@ public class ApiController {
         }
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @PostMapping(
+            path = "/api/{id}/deploy/{commitId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @RolesAllowed(UserRoles.USER)
+    public ResponseEntity<Response> deployApi(
+            @PathVariable("id") Long id,
+            @PathVariable("commitId") String commitId
+    ) {
+        long startTime = System.currentTimeMillis();
+        log.info("Initiating|deployApi");
+        log.info("PathVar|id:{}, commitId:{}", id, commitId);
+        try {
+            this.apiService.deploy(id, commitId);
+            Response response = Response.success("success")
+                    .build(ResponseCodes.OPERATION_SUCCESS);
+            log.info("Res|{}", response.toString());
+            return ResponseEntity.ok(response);
+        } finally {
+            log.info("Completed|deployApi|ProcessingTime:{}ms", System.currentTimeMillis() - startTime);
+        }
+    }
 }

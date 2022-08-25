@@ -130,6 +130,13 @@ export const commitApiXml = async (data) => {
         body: JSON.stringify(data),
     });
 }
+export const deployApi = async (id, commitId) => {
+    return await _fetch({
+        url: `/api/${id}/deploy/${commitId}`,
+        method: HttpMethod.POST,
+        body: JSON.stringify({}),
+    });
+}
 export const getCxResponsesByApiId = async (api_id) => {
     return await _fetch({
         url: `/api/${api_id}/cx-responses`,

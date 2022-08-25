@@ -62,7 +62,7 @@ const ApiCreator = () => {
             // cancel the subscription
             isApiSubscribed = false;
         };
-    }, [])
+    }, [location])
 
     useEffect(() => {
         if (apiUpdateEvent) {
@@ -98,7 +98,7 @@ const ApiCreator = () => {
             )}
 
             {menu.title === "Details" && selectedApi && (
-                <InfoPanel inc="1" />
+                <InfoPanel />
             )}
         </>
     )

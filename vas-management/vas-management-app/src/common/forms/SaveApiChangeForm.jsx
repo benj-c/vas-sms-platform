@@ -30,7 +30,7 @@ const SaveApiChangeForm = ({ dismissPanel, api }) => {
             .then(res => {
                 // setapiUpdateEventAtom({id: ad.apiId, commitId: res.data});
                 dismissPanel();
-                window.location.href = `/api-creator?ref=${ad.apiId}&commit=${res.data}`;
+                history.push(`/api-creator?ref=${ad.apiId}&commit=${res.data}`)
             })
             .catch(e => { })
             .finally(() => { })
