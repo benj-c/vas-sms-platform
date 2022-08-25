@@ -37,11 +37,11 @@ const ApiItem = ({ api, onSelect }) => {
                             initialsColor={`var(--themePrimary)`}
                             size={PersonaSize.size40}
                             text={api.name}
-                            secondaryText={`Version: ${api.version}`}
+                            secondaryText={`Version: ${api.version}, ${api.commitId.split("-").reverse()[0]}`}
                         />
                     </div>
                     <span>{api.description}</span>
-                    <small style={{position: 'absolute', bottom: '0.5rem', left: '1rem', color: '#e7e7e7'}}>Commit: {api.commitId}</small>
+                    {/* <small style={{position: 'absolute', bottom: '0.5rem', left: '1rem', color: '#e7e7e7'}}>Commit: {api.commitId.split("-").reverse()[0]}</small> */}
                 </article>
             )}
         </>

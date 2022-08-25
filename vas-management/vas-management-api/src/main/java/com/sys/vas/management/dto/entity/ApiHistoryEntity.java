@@ -43,7 +43,7 @@ public class ApiHistoryEntity {
     private Boolean isActive;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "api_id", referencedColumnName = "ID", nullable = false)
     private ApiEntity api;
 

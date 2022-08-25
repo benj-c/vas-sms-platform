@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { createUseStyles } from "react-jss";
 import { ReactFlowProvider } from "react-flow-renderer"
 import { useRecoilState, useRecoilValue } from "recoil";
-import { useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 //app
 import { apiOfApiCreatorAtom, selectedTopBarMenuAtom, apiUpdateEventAtom } from "../../state/atoms"
 import GraphNodePanel from "./graph-panel/GraphNodePanel";
@@ -42,6 +42,7 @@ const useStyles = createUseStyles({
 
 const ApiCreator = () => {
     const classes = useStyles();
+    const history = useHistory();
     const location = useLocation();
     const [apiLoading, setApiLoading] = useState(false);
     const [selectedApi, setSelectedApi] = useRecoilState(apiOfApiCreatorAtom);
@@ -78,7 +79,9 @@ const ApiCreator = () => {
             let d = { ...res.data, graphElements };
             setSelectedApi(d);
         })
-            .catch(e => { })
+            .catch(e => {
+                history.push("/404")
+            })
             .finally(() => {
                 setApiLoading(false)
             })

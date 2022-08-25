@@ -1,9 +1,6 @@
 package com.sys.vas.management.service;
 
-import com.sys.vas.management.dto.ApiHistoryVersionDto;
-import com.sys.vas.management.dto.ApiResponseDto;
-import com.sys.vas.management.dto.ApiXmlResponseDto;
-import com.sys.vas.management.dto.ResponseCodes;
+import com.sys.vas.management.dto.*;
 import com.sys.vas.management.dto.entity.ApiEntity;
 import com.sys.vas.management.dto.entity.ApiHistoryEntity;
 import com.sys.vas.management.dto.request.AddApiCommitRequest;
@@ -18,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -52,14 +51,30 @@ public class ApiService {
      * @param requestDto
      * @return
      */
-    public long create(CreateApiRequestDto requestDto) {
+    public ApiCreateResponseDto create(CreateApiRequestDto requestDto) {
+        ApiHistoryEntity apiHistory = new ApiHistoryEntity();
+        apiHistory.setCommitMessage("Initial commit");
+        apiHistory.setXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        apiHistory.setIsActive(true);
+        apiHistory.setCommitedDateTime(LocalDateTime.now());
+        apiHistory.setCommitId(UUID.randomUUID().toString());
+        apiHistory.setVersion(requestDto.getVersion());
+
+        Set<ApiHistoryEntity> hiss = new HashSet<>();
+        hiss.add(apiHistory);
+
         ApiEntity apiEntity = new ApiEntity();
         apiEntity.setName(requestDto.getName());
         apiEntity.setDescription(requestDto.getDescription());
-//        apiEntity.setVersion(requestDto.getVersion());
 
-        long id = apiRepository.save(apiEntity).getId();
-        return id;
+        apiEntity.setApis(hiss);
+        apiHistory.setApi(apiEntity);
+
+        ApiHistoryEntity hs = apiHistoryRepository.save(apiHistory);
+        return ApiCreateResponseDto.builder()
+                .id(hs.getApi().getId())
+                .commitId(hs.getCommitId())
+                .build();
     }
 
     /**

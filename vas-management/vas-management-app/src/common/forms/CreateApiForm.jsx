@@ -17,7 +17,7 @@ const CreateApiForm = ({ onDismiss }) => {
         setSubmittingTrue();
         createApi(data)
             .then(res => {
-                history.push(`/api-creator?ref=${res.data}`)
+                history.push(`/api-creator?ref=${res.data.id}&commit=${res.data.commitId}`)
             })
             .catch(e => {
                 setSubmitDetail({ ...{ type: "error" }, ...e });

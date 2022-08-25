@@ -67,8 +67,8 @@ public class ApiController {
         log.info("Initiating|createApi");
         log.info("ReqBody|{}", requestDto.toString());
         try {
-            long id = this.apiService.create(requestDto);
-            Response response = Response.success(id)
+            ApiCreateResponseDto res = this.apiService.create(requestDto);
+            Response response = Response.success(res)
                     .build(ResponseCodes.OPERATION_SUCCESS);
             log.info("Res|{}", response.toString());
             return ResponseEntity.ok(response);
