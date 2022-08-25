@@ -41,7 +41,7 @@ const StartNode = ({ data }) => {
                 style={{ borderRadius: '0.25rem' }}
             />
             <div className={classes.nodeInner}>
-                <span>{data.label}</span>
+                <span>Start</span>
             </div>
         </>
     )

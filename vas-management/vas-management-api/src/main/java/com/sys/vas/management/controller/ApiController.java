@@ -1,9 +1,11 @@
 package com.sys.vas.management.controller;
 
+import com.sys.vas.management.dto.ApiResponseDto;
 import com.sys.vas.management.dto.Response;
 import com.sys.vas.management.dto.ResponseCodes;
 import com.sys.vas.management.dto.UserRoles;
 import com.sys.vas.management.dto.entity.ApiEntity;
+import com.sys.vas.management.dto.request.AddApiCommitRequest;
 import com.sys.vas.management.dto.request.CreateApiRequestDto;
 import com.sys.vas.management.dto.request.UpdateApiDto;
 import com.sys.vas.management.service.ApiService;
@@ -40,7 +42,7 @@ public class ApiController {
         long startTime = System.currentTimeMillis();
         log.info("Initiating|getApis");
         try {
-            List<ApiEntity> allApis = this.apiService.getAllApis();
+            List<ApiResponseDto> allApis = this.apiService.getAllApis();
             Response response = Response.success(allApis)
                     .build(ResponseCodes.OPERATION_SUCCESS);
             log.info("Res|{}", response.toString());
@@ -125,6 +127,34 @@ public class ApiController {
             return ResponseEntity.ok(response);
         } finally {
             log.info("Completed|updateApi|ProcessingTime:{}ms", System.currentTimeMillis() - startTime);
+        }
+    }
+
+    /**
+     *
+     * @param addApiCommitRequest
+     * @return
+     */
+    @PostMapping(
+            path = "/api/commit",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @RolesAllowed(UserRoles.USER)
+    public ResponseEntity<Response> commitApi(
+            @Valid @RequestBody AddApiCommitRequest addApiCommitRequest
+    ) {
+        long startTime = System.currentTimeMillis();
+        log.info("Initiating|commitApi");
+        log.info("ReqBody|{}", addApiCommitRequest.toString());
+        try {
+            long id = this.apiService.commit(addApiCommitRequest);
+            Response response = Response.success(id)
+                    .build(ResponseCodes.OPERATION_SUCCESS);
+            log.info("Res|{}", response.toString());
+            return ResponseEntity.ok(response);
+        } finally {
+            log.info("Completed|commitApi|ProcessingTime:{}ms", System.currentTimeMillis() - startTime);
         }
     }
 

@@ -37,6 +37,7 @@ const useStyles = createUseStyles({
             borderLeft: '1px solid #e7e7e7',
             paddingLeft: '0.5rem',
             paddingRight: '0.5rem',
+            textTransform: 'capitalize',
         },
     },
 })

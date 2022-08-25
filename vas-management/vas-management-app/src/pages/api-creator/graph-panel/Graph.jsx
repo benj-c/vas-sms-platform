@@ -46,9 +46,7 @@ const Graph = () => {
     const [apiUpdateEvent, setapiUpdateEventAtom] = useRecoilState(apiUpdateEventAtom);
 
     useEffect(() => {
-        // let elemns = [...graphApi.graphElements.nodes, ...graphApi.graphElements.edges];
         let elemns = [].concat(graphApi.graphElements.nodes).concat(graphApi.graphElements.edges)
-        console.log(elemns);
         setElements(elemns);
     }, [graphApi])
 
@@ -126,15 +124,15 @@ const Graph = () => {
         setGraphMsg(null)
     }, [reactFlowInstance])
 
-    const dismissPanel = useCallback(() => {
-        togglePanel()
-        setSelectedNode(null)
-    }, [reactFlowInstance])
-
     const onNodeDataChange = data => {
         let node = elements.filter(n => n.id == data.id)[0]
         console.log({ node, data })
     }
+
+    const dismissPanel = useCallback(() => {
+        togglePanel()
+        setSelectedNode(null)
+    }, [reactFlowInstance])
 
     const toXml = () => {
         let _flow = reactFlowInstance.toObject();
@@ -175,7 +173,6 @@ const Graph = () => {
             }
         }
         mx++;
-        console.log({ mx })
         return mx;
     }
 

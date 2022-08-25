@@ -1,5 +1,7 @@
 class XmlWriter {
     constructor(currentApi, nodes, edges) {
+        console.log({nodes})
+        console.log({edges})
         this.flow = currentApi;
         this.nodes = nodes;
         this.edges = edges;
@@ -19,24 +21,16 @@ class XmlWriter {
         return xml;
     }
     getNodeInitPart(node) {
-        return `<block id="${node.id}" type="${node.data.label}" nodeCType="${node.type}" pos="${this.getPos(node)}">`
+        let lbl = node.data.label.startsWith("Function") ? "func" : node.data.label;
+        return `<block id="${node.id}" type="${lbl}" nodeCType="${node.type}" pos="${this.getPos(node)}">`
     }
     getNodeNextPart(next) {
         return `<next-node>${next}</next-node>`;
     }
     getStartXml(node, next) {
-        if (node.id === "start") {
-            node.id = 0;
-        }
-        let xml = this.getNodeInitPart(node);
+        let xml = `<block id="0" type="assign" nodeCType="${node.type}" pos="${this.getPos(node)}">`;
         xml += this.getNodeNextPart(next)
         xml += '</block>'
-        return xml;
-    }
-    getLogXml(node, next) {
-        let xml = this.getNodeInitPart(node);
-        xml += this.getNodeNextPart(next)
-        xml += `</block>`
         return xml;
     }
     getAssignXml(node, next) {
@@ -46,23 +40,22 @@ class XmlWriter {
         return xml;
     }
     getFunctionXml(node, next) {
-        let xml = `<block id="${node.id}" type="func" nodeCType="customNode" pos="${this.getPos(node)}">`
-        xml += `<type>${node.data.label.split(':')[1]}</type>`
+        let xml = this.getNodeInitPart(node);
         xml += this.getNodeNextPart(next)
         xml += `</block>`
         return xml;
     }
     getSwitchXml() {
         let xml = ``;
-        let switches = this.nodes.filter(f => f.data.label == 'Branch')
+        let switches = this.nodes.filter(f => f.data.label == 'branch')
         for (let i = 0; i < switches.length; i++) {
             xml += this.getNodeInitPart(switches[i])
             let sEdges = this.edges.filter(f => f.source == switches[i].id)
             for (let j = 0; j < sEdges.length; j++) {
                 let nd = this.getNodeById(sEdges[j].target)
                 let ed = this.getEdgeBySourceId(sEdges[j].target)
-                if (nd.data.label === 'Case') {
-                    xml += `<case id="${nd.id}" type="Case" nodeCType="customNode" pos="${this.getPos(nd)}">`
+                if (nd.data.label === 'case') {
+                    xml += `<case id="${nd.id}" type="case" nodeCType="customNode" pos="${this.getPos(nd)}">`
                     xml += this.getNodeNextPart(ed.target)
                     xml += `</case>`
                 } else {
@@ -84,33 +77,29 @@ class XmlWriter {
     write() {
         let xml = '<?xml version="1.0" encoding="UTF-8"?>';
         xml += `<service name='${this.flow.name}'>`;
-        // xml += this.getHeaderXml();
 
         for (let i = 0; i < this.edges.length; i++) {
             let ed = this.edges[i];
             let node = this.getNodeById(ed.source)
-            if (node.data.label != 'Case' && node.data.label != 'Default') {
-                if (node.data.label.startsWith('Function')) {
-                    xml += this.getFunctionXml(node, ed.target);
-                } else {
-                    switch (node.data.label) {
-                        case 'Start': {
-                            xml += this.getStartXml(node, ed.target);
-                            break;
-                        }
-                        case 'Log': {
-                            xml += this.getLogXml(node, ed.target);
-                            break;
-                        }
-                        case 'Assign': {
-                            xml += this.getAssignXml(node, ed.target);
-                            break;
-                        }
-                        default:
-                            break;
+            console.log(ed.source, node)
+            // if (node.data.label != 'Case' && node.data.label != 'Default') {
+            if (node.data.label.startsWith('Function')) {
+                xml += this.getFunctionXml(node, ed.target);
+            } else {
+                switch (node.data.label) {
+                    case 'start': {
+                        xml += this.getStartXml(node, ed.target);
+                        break;
                     }
+                    case 'assign': {
+                        xml += this.getAssignXml(node, ed.target);
+                        break;
+                    }
+                    default:
+                        break;
                 }
             }
+            // }
         }
         xml += this.getSwitchXml();
         xml += this.getReturnXml(this.nodes.filter(n => n.id === "return")[0]);

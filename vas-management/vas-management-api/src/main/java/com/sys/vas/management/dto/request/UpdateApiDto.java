@@ -9,6 +9,4 @@ public class UpdateApiDto {
     private long id;
     private String name;
     private String description;
-    private String version;
-    private String xml;
 }

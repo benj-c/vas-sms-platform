@@ -17,13 +17,13 @@ const initialElements = {
         {
             id: 'start',
             type: 'startNode',
-            data: { label: 'Start' },
+            data: { label: 'start' },
             position: { x: 25, y: 225 },
         },
         {
             id: 'return',
             type: 'returnNode',
-            data: { label: 'Return' },
+            data: { label: 'return' },
             position: { x: 1025, y: 225 },
         },
     ],

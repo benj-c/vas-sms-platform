@@ -51,13 +51,13 @@ export const getNode = (data) => {
     let id = data.id, nElements = [];
     nElements.push(createNode(id, data));
 
-    if (data.title === 'Branch') {
+    if (data.title === 'branch') {
         //create deafault case
         id++;
         let cPos = { x: data.position.x + 150, y: data.position.y - 60 };
         let caseNode = {
             type: 'customNode',
-            title: `Case`,
+            title: `case`,
             icon: 'Remote',
             position: cPos,
         }
@@ -67,7 +67,7 @@ export const getNode = (data) => {
         let dPos = { x: cPos.x, y: cPos.y + 130 };
         let dNode = {
             type: 'customNode',
-            title: `Default`,
+            title: `default`,
             icon: 'Remote',
             position: dPos,
         }
@@ -102,7 +102,19 @@ export const toJsonGraph = (xml) => {
         edges = JSON.parse(xmlDoc.getElementsByTagName("conn")[0]?.textContent || "[]");
         for (let i = 0; i < blocks.length; i++) {
             let blk = blocks[i];
-            if (blk.getAttribute("type") === "Branch") {
+            if (blk.getAttribute("nodeCType") == "startNode") {
+                let p = blk.getAttribute("pos").split(",");
+                nodes.push({
+                    id: "start",
+                    type: blk.getAttribute("nodeCType"),
+                    data: {
+                        label: "Start"
+                    },
+                    position: { x: p[0], y: p[1] }
+                })
+            }
+
+            if (blk.getAttribute("type") === "branch") {
                 nodes.push(createNodeByTag(blk, blk.getAttribute("id")));
                 let cases = blk.getElementsByTagName("case");
                 for (let j = 0; j < cases.length; j++) {

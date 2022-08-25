@@ -7,38 +7,31 @@ import AssignNodePropPanel from './property-panels/AssignNodePropPanel'
 const CORE_NODES = [
     {
         id: 0,
-        title: 'Assign',
+        title: 'assign',
         type: 'customNode',
         icon: 'Variable',
         propsComponent: AssignNodePropPanel,
     },
     {
         id: 1,
-        title: 'Branch',
+        title: 'branch',
         type: 'customNode',
         icon: 'BranchFork2',
         propsComponent: () => <div>Switch</div>,
     },
     {
         id: 2,
-        title: 'Case',
+        title: 'case',
         type: 'customNode',
         icon: 'Remote',
         propsComponent: () => <div>Case</div>,
     },
     {
         id: 3,
-        title: 'Default',
+        title: 'default',
         type: 'customNode',
         icon: 'Remote',
         propsComponent: () => <div>Default</div>,
-    },
-    {
-        id: 4,
-        title: 'Log',
-        type: 'customNode',
-        icon: 'CodeEdit',
-        propsComponent: () => <div>Log</div>,
     },
 ]
 
@@ -151,7 +144,7 @@ const GraphNodePanel = () => {
                 {CORE_NODES.map(node => (
                     <li key={node.id} onDragStart={event => onDragStart(event, node)} draggable>
                         <i className={`ms-Icon ms-Icon--${node.icon}`} aria-hidden="true"></i>
-                        <span>
+                        <span style={{textTransform: 'capitalize'}}>
                             {node.title}
                         </span>
                     </li>
@@ -162,7 +155,7 @@ const GraphNodePanel = () => {
                 {functionNodes.map(node => (
                     <li key={node.id} onDragStart={event => onDragStart(event, node)} draggable>
                         <i className={`ms-Icon ms-Icon--${node.icon}`} aria-hidden="true"></i>
-                        <span>
+                        <span style={{textTransform: 'capitalize'}}>
                             {node.title.split(':')[1]}
                         </span>
                     </li>
