@@ -36,20 +36,20 @@ export const routes = [
         },
         scope: ["public"],
     },
-    // {
-    //     id: 2,
-    //     path: "/home",
-    //     name: "Home",
-    //     description: "Home",
-    //     exact: true,
-    //     main: () => <Home />,
-    //     scope: [],
-    //     sideBarProps: {
-    //         pos: "top",
-    //         icon: "HomeSolid",
-    //     },
-    //     menu: []
-    // },
+    {
+        id: 2,
+        path: "/home",
+        name: "Home",
+        description: "Home",
+        exact: true,
+        main: () => <Home />,
+        scope: [],
+        sideBarProps: {
+            pos: "top",
+            icon: "HomeSolid",
+        },
+        menu: []
+    },
     {
         id: 3,
         path: "/library",

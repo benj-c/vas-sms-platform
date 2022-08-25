@@ -37,7 +37,6 @@ const Home = props => {
                 </span>,
             ],
             activityPersonas: [{ imageInitials: 'JH', text: 'Jack Howden' }],
-            comments: 'Hello, this is the text of my basic comment!',
             timeStamp: '23m ago',
         }
     ])
