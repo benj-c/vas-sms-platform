@@ -198,10 +198,13 @@ const Graph = () => {
             position: 'absolute',
             top: '0rem',
             left: '0.5rem',
+            display: 'flex',
+            gap: '0.25rem',
+            alignItems: 'center'
         }}>
-            <Text variant="medium">{graphApi.name}</Text>,&nbsp;&nbsp;
-            <Text variant="small">Version: {graphApi.version}</Text>
-            <Text variant="small">, Commit: {graphApi.commitId}</Text>
+            <Text variant="small">[ {graphApi.name}, </Text>
+            <Text variant="small">v{graphApi.version} ]</Text>
+            <Text variant="small">{graphApi.commitId}</Text>
         </div>
     )
 

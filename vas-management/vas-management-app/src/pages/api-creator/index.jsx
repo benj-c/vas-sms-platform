@@ -76,6 +76,7 @@ const ApiCreator = () => {
         getApiByApiId(id, commit).then(res => {
             let { nodes, edges } = toJsonGraph(res.data.xml)
             let graphElements = (nodes.length > 0 || edges.length > 0) ? { nodes, edges } : initialElements;
+            console.log(graphElements)
             let d = { ...res.data, graphElements };
             setSelectedApi(d);
         })

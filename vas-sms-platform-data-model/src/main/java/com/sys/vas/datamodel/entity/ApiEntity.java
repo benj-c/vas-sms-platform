@@ -35,6 +35,9 @@ public class ApiEntity {
     @Column(name = "version", nullable = true)
     private String version;
 
+    @OneToMany(mappedBy = "api")
+    private Set<ApiHistoryEntity> apis;
+
     @JsonIgnore
     @OneToMany(mappedBy = "api")
     private Set<ActionEntity> actions;

@@ -108,7 +108,12 @@ const KeywordsPanel = ({ }) => {
                 <ul>
                     {keywords.length > 0 && keywords.map((k, i) => (
                         <li
-                            style={{ background: (selectedKeyword && k.id === selectedKeyword.id) ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.03)' }}
+                            style={{
+                                borderBottomWidth: '2px',
+                                borderBottomStyle: 'solid',
+                                background: (selectedKeyword && k.id === selectedKeyword.id) ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.03)',
+                                borderBottomColor: (selectedKeyword && k.id === selectedKeyword.id) ? 'var(--themePrimary)' : 'transparent',
+                            }}
                             key={k.id}
                             onClick={() => onItemSelect(k)}
                         >

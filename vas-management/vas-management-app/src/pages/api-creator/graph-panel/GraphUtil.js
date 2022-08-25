@@ -112,9 +112,7 @@ export const toJsonGraph = (xml) => {
                     },
                     position: { x: p[0], y: p[1] }
                 })
-            }
-
-            if (blk.getAttribute("type") === "branch") {
+            } else if (blk.getAttribute("type") === "branch") {
                 nodes.push(createNodeByTag(blk, blk.getAttribute("id")));
                 let cases = blk.getElementsByTagName("case");
                 for (let j = 0; j < cases.length; j++) {

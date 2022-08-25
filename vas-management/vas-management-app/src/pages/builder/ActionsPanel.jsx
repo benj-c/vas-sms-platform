@@ -102,7 +102,10 @@ const ActionsPanel = ({ serviceId }) => {
                     {actions.length > 0 && actions.map((act, i) => (
                         <li
                             style={{
+                                borderBottomWidth: '2px',
+                                borderBottomStyle: 'solid',
                                 background: (selectedAction && act.id === selectedAction.id) ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.03)',
+                                borderBottomColor: (selectedAction && act.id === selectedAction.id) ? 'var(--themePrimary)' : 'transparent',
                             }}
                             key={act.id}
                             onClick={() => onActionSelect(act)}>

@@ -16,6 +16,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import com.sys.vas.adaptor.SCAdaptor;
 import com.sys.vas.datamodel.entity.ApiEntity;
+import com.sys.vas.datamodel.entity.ApiHistoryEntity;
+import com.sys.vas.datamodel.repository.ApiHistoryRepository;
 import com.sys.vas.datamodel.repository.ApiRepository;
 import com.sys.vas.exception.ApiNotFoundException;
 import com.sys.vas.exception.InParamNotFoundException;
@@ -52,7 +54,7 @@ public class Kernel {
     private Map<String, SCAdaptor> scAdaptors;
 
     @Autowired
-    private ApiRepository acApi;
+    private ApiHistoryRepository acApi;
 
     // @Value("${msce.home.dir}")
     // private String homeDirectoty;
@@ -290,10 +292,11 @@ public class Kernel {
             if (doc == null) {
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                ApiEntity scapi = acApi.findByName(api).orElseThrow(() -> new ApiNotFoundException("Service creater Api [" + api + "] is not found."));
+                ApiHistoryEntity scapi = acApi.findActiveApiByName(api).orElseThrow(() -> new ApiNotFoundException("Service creater Api [" + api + "] is not found."));
                 if (scapi.getXml() == null) {
                     throw new ApiNotFoundException("Service creater Api [" + api + "] XML is not available.");
-                }
+                };
+                log.info("|Found API:{}, Commit:{}, Version:{}", api, scapi.getCommitId(), scapi.getVersion());
                 doc = dBuilder.parse(new ByteArrayInputStream(scapi.getXml().getBytes()));
                 log.info(bTag + "|Loading api XML to memory from DB");
                 constant.setApis(api, doc);
