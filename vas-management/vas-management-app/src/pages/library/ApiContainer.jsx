@@ -50,7 +50,7 @@ const ApiContainer = () => {
     }, [])
 
     const selectApi = f => {
-        history.push(`/api-creator?ref=${f.id}&version=${f.version}`)
+        history.push(`/api-creator?ref=${f.id}&commit=${f.commitId}`)
     }
 
     return (

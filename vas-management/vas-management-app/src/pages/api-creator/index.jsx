@@ -54,8 +54,8 @@ const ApiCreator = () => {
             setSelectedApi(null);
             let urlParams = new URLSearchParams(location.search);
             let apiId = Number(urlParams.get('ref'));
-            let version = Number(urlParams.get('version'));
-            loadApi(apiId, version);
+            let commit = urlParams.get('commit');
+            loadApi(apiId, commit);
         }
 
         return () => {
@@ -66,13 +66,13 @@ const ApiCreator = () => {
 
     useEffect(() => {
         if (apiUpdateEvent) {
-            loadApi(apiUpdateEvent.id, apiUpdateEvent.version)
+            loadApi(apiUpdateEvent.id, apiUpdateEvent.commitId)
         }
     }, [apiUpdateEvent])
 
-    const loadApi = (id, version) => {
+    const loadApi = (id, commit) => {
         setApiLoading(true)
-        getApiByApiId(id).then(res => {
+        getApiByApiId(id, commit).then(res => {
             let { nodes, edges } = toJsonGraph(res.data.xml)
             let graphElements = (nodes.length > 0 || edges.length > 0) ? { nodes, edges } : initialElements;
             let d = { ...res.data, graphElements };
@@ -98,7 +98,7 @@ const ApiCreator = () => {
             )}
 
             {menu.title === "Details" && selectedApi && (
-                <InfoPanel />
+                <InfoPanel inc="1" />
             )}
         </>
     )

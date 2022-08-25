@@ -83,9 +83,15 @@ export const getAllApis = async () => {
         method: HttpMethod.GET,
     });
 }
-export const getApiByApiId = async (id) => {
+export const getApiByApiId = async (id, v) => {
     return await _fetch({
-        url: `/api/${id}`,
+        url: `/api/${id}?commit=${v}`,
+        method: HttpMethod.GET,
+    });
+}
+export const getApiVersionsByApiId = async (id) => {
+    return await _fetch({
+        url: `/api/${id}/versions`,
         method: HttpMethod.GET,
     });
 }
@@ -114,6 +120,13 @@ export const updateApi = async (data) => {
     return await _fetch({
         url: `/api`,
         method: HttpMethod.PUT,
+        body: JSON.stringify(data),
+    });
+}
+export const commitApiXml = async (data) => {
+    return await _fetch({
+        url: `/api/commit`,
+        method: HttpMethod.POST,
         body: JSON.stringify(data),
     });
 }

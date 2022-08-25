@@ -16,6 +16,7 @@ import useBoolean from "../../../common/hooks/useBoolean";
 import { getPropComponent } from './GraphNodePanel'
 import { updateApi } from "../../../common/ApiHandler"
 import CodeViewer from "../CodeViewer";
+import SaveApiChangeForm from "../../../common/forms/SaveApiChangeForm";
 
 const edgeTypes = {
     buttonedge: ButtonEdge,
@@ -36,8 +37,10 @@ const Graph = () => {
     const [elements, setElements] = useState([]);
     const [graphMsg, setGraphMsg] = useState(null);
     const [selectedNode, setSelectedNode] = useState(null);
+    const [apiToBeSaved, setApiToBeSaved] = useState(null);
     const { value: isPanelOpen, toggle: togglePanel, } = useBoolean(false);
     const { value: isCodeViwerOpen, toggle: toggleCodeViewerPanel, } = useBoolean(false);
+    const { value: isSaveOpen, toggle: toggleSavePanel, } = useBoolean(false);
 
     //recoil states
     const removedEdge = useRecoilValue(removedEdgeAtom)
@@ -154,12 +157,8 @@ const Graph = () => {
             setProcessedXml(xml)
             let apiData = { ...graphApi, xml: xml };
             delete apiData.graphElements;
-            updateApi(apiData).then(res => {
-                setElements([]);
-                setapiUpdateEventAtom(apiData)
-            })
-                .catch(e => { })
-                .finally(() => { })
+            setApiToBeSaved(apiData);
+            toggleSavePanel();
         }
     }
 
@@ -201,7 +200,8 @@ const Graph = () => {
             left: '0.5rem',
         }}>
             <Text variant="medium">{graphApi.name}</Text>,&nbsp;&nbsp;
-            <Text variant="medium">v{graphApi.version}</Text>
+            <Text variant="small">Version: {graphApi.version}</Text>
+            <Text variant="small">, Commit: {graphApi.commitId}</Text>
         </div>
     )
 
@@ -275,6 +275,17 @@ const Graph = () => {
                 type={PanelType.medium}
             >
                 <CodeViewer />
+            </Panel>
+
+            
+            <Panel
+                headerText={`Save API`}
+                isOpen={isSaveOpen}
+                onDismiss={toggleSavePanel}
+                closeButtonAriaLabel="Close"
+                type={PanelType.medium}
+            >
+                <SaveApiChangeForm dismissPanel={toggleSavePanel} api={apiToBeSaved} />
             </Panel>
         </div>
     )

@@ -1,10 +1,8 @@
 package com.sys.vas.management.controller;
 
-import com.sys.vas.management.dto.ApiResponseDto;
-import com.sys.vas.management.dto.Response;
-import com.sys.vas.management.dto.ResponseCodes;
-import com.sys.vas.management.dto.UserRoles;
+import com.sys.vas.management.dto.*;
 import com.sys.vas.management.dto.entity.ApiEntity;
+import com.sys.vas.management.dto.entity.ApiHistoryEntity;
 import com.sys.vas.management.dto.request.AddApiCommitRequest;
 import com.sys.vas.management.dto.request.CreateApiRequestDto;
 import com.sys.vas.management.dto.request.UpdateApiDto;
@@ -88,12 +86,13 @@ public class ApiController {
     )
     @RolesAllowed(UserRoles.USER)
     public ResponseEntity<Response> getApiById(
-            @PathVariable("id") Long id
+            @PathVariable("id") Long id,
+            @RequestParam("commit") String commit
     ) {
         long startTime = System.currentTimeMillis();
         log.info("Initiating|getApiById");
         try {
-            ApiEntity api = this.apiService.getApiById(id);
+            ApiXmlResponseDto api = this.apiService.getApiByIdAndCommit(id, commit);
             Response response = Response.success(api)
                     .build(ResponseCodes.OPERATION_SUCCESS);
             log.info("Res|{}", response.toString());
@@ -148,13 +147,39 @@ public class ApiController {
         log.info("Initiating|commitApi");
         log.info("ReqBody|{}", addApiCommitRequest.toString());
         try {
-            long id = this.apiService.commit(addApiCommitRequest);
-            Response response = Response.success(id)
+            String commitId = this.apiService.commit(addApiCommitRequest);
+            Response response = Response.success(commitId)
                     .build(ResponseCodes.OPERATION_SUCCESS);
             log.info("Res|{}", response.toString());
             return ResponseEntity.ok(response);
         } finally {
             log.info("Completed|commitApi|ProcessingTime:{}ms", System.currentTimeMillis() - startTime);
+        }
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(
+            path = "/api/{id}/versions",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @RolesAllowed(UserRoles.USER)
+    public ResponseEntity<Response> getApiVersions(
+            @PathVariable("id") Long id
+    ) {
+        long startTime = System.currentTimeMillis();
+        log.info("Initiating|getApiVersions");
+        try {
+            List<ApiHistoryVersionDto> apis = this.apiService.getApiVersionsById(id);
+            Response response = Response.success(apis)
+                    .build(ResponseCodes.OPERATION_SUCCESS);
+            log.info("Res|{}", response.toString());
+            return ResponseEntity.ok(response);
+        } finally {
+            log.info("Completed|getApiVersions|ProcessingTime:{}ms", System.currentTimeMillis() - startTime);
         }
     }
 

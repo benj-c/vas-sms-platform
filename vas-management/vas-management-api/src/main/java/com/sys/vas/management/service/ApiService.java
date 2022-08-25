@@ -1,6 +1,8 @@
 package com.sys.vas.management.service;
 
+import com.sys.vas.management.dto.ApiHistoryVersionDto;
 import com.sys.vas.management.dto.ApiResponseDto;
+import com.sys.vas.management.dto.ApiXmlResponseDto;
 import com.sys.vas.management.dto.ResponseCodes;
 import com.sys.vas.management.dto.entity.ApiEntity;
 import com.sys.vas.management.dto.entity.ApiHistoryEntity;
@@ -14,6 +16,7 @@ import com.sys.vas.management.util.ApiUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,8 +66,8 @@ public class ApiService {
      * @param id
      * @return
      */
-    public ApiEntity getApiById(long id) {
-        return apiRepository.findById(id)
+    public ApiXmlResponseDto getApiByIdAndCommit(long id, String commitId) {
+        return apiRepository.findApiByIdAndVersion(id, commitId)
                 .orElseThrow(() -> new ApiException(ResponseCodes.API_NOT_FOUND, "API not found for ID:" + id));
     }
 
@@ -93,22 +96,32 @@ public class ApiService {
      * @param addApiCommitRequest
      * @return
      */
-    public long commit(AddApiCommitRequest addApiCommitRequest) {
+    public String commit(AddApiCommitRequest addApiCommitRequest) {
         ApiEntity fApi = apiRepository.findById(addApiCommitRequest.getApiId())
                 .orElseThrow(() -> new ApiException(ResponseCodes.API_NOT_FOUND, "API not found for ID:" + addApiCommitRequest.getApiId()));
 
         ApiHistoryEntity commit = new ApiHistoryEntity();
         commit.setCommitId(UUID.randomUUID().toString());
-        commit.setVersion(null);
+        commit.setVersion(addApiCommitRequest.getVersion());
         commit.setXml(addApiCommitRequest.getXml());
         commit.setIsActive(false);
         commit.setCommitMessage(addApiCommitRequest.getCommitMessage());
+        commit.setCommitedDateTime(LocalDateTime.now());
         commit.setApi(fApi);
 
-        return apiHistoryRepository.save(commit).getId();
+        return apiHistoryRepository.save(commit).getCommitId();
     }
 
     public void setActiveApi(long apiId, String commitId) {
-        
+
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public List<ApiHistoryVersionDto> getApiVersionsById(Long id) {
+        return apiHistoryRepository.findAllByApiId(id);
     }
 }

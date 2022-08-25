@@ -1,9 +1,11 @@
 package com.sys.vas.management.dto.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -25,8 +27,12 @@ public class ApiHistoryEntity {
     private String commitMessage;
 
     @Basic
-    @Column(name = "version", nullable = false, length = 50)
+    @Column(name = "version", nullable = true, length = 50)
     private String version;
+
+    @Basic
+    @Column(name = "commited_date_time", nullable = false)
+    private LocalDateTime commitedDateTime;
 
     @Basic
     @Column(name = "xml", nullable = false, length = -1, columnDefinition = "LONG")
@@ -36,6 +42,7 @@ public class ApiHistoryEntity {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "api_id", referencedColumnName = "ID", nullable = false)
     private ApiEntity api;

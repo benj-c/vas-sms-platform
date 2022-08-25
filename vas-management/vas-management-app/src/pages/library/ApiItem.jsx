@@ -8,6 +8,7 @@ const useStyles = createUseStyles({
         borderRadius: '0.3rem',
         height: '5.8rem',
         cursor: 'pointer',
+        position: 'relative',
         '&:hover': {
             background: 'rgba(255, 255, 255, 0.1)',
         },
@@ -40,6 +41,7 @@ const ApiItem = ({ api, onSelect }) => {
                         />
                     </div>
                     <span>{api.description}</span>
+                    <small style={{position: 'absolute', bottom: '0.5rem', left: '1rem', color: '#e7e7e7'}}>Commit: {api.commitId}</small>
                 </article>
             )}
         </>

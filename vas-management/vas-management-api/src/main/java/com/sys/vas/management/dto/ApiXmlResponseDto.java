@@ -3,14 +3,17 @@ package com.sys.vas.management.dto;
 import lombok.*;
 
 @Data
-@Builder
 @ToString
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiResponseDto {
-    private Long id;
-    private String description;
+public class ApiXmlResponseDto {
+    private long id;
     private String name;
+    private String description;
     private String version;
     private String commitId;
+    private String commitMessage;
+    private Boolean isActive;
+    private String xml;
 }
