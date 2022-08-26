@@ -1,10 +1,11 @@
 class XmlWriter {
-    constructor(currentApi, nodes, edges) {
+    constructor(currentApi, nodes, edges, data) {
         // console.log({nodes})
-        // console.log({edges})
+        console.log({data})
         this.flow = currentApi;
         this.nodes = nodes;
         this.edges = edges;
+        this.data = data;
     }
     getNodeById(id) {
         return this.nodes.filter(e => e.id === id)[0];
@@ -14,6 +15,9 @@ class XmlWriter {
     }
     getPos(node) {
         return `${node.position.x},${node.position.y}`;
+    }
+    getDataObj(id) {
+        return this.data.filter(e => e.id == id)[0];
     }
     getHeaderXml() {
         let xml = `<name>${this.flow.name}</name>`;
@@ -38,9 +42,11 @@ class XmlWriter {
     }
     getAssignXml(node, next) {
         let xml = this.getNodeInitPart(node);
-        if (node.props) {
-            for (let i = 0; i < node.props.length; i++) {
-                let v = node.props[i];
+        let dt = this.getDataObj(node.id);
+        console.log(dt)
+        if (dt?.props?.length > 0) {
+            for (let i = 0; i < dt.props.length; i++) {
+                let v = dt.props[i];
                 xml += this.getVariableXml(v.name, v.value);
             }
         }

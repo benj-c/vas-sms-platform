@@ -109,7 +109,7 @@ const useStyles = createUseStyles({
 
 export const getPropComponent = name => {
     if (name) {
-        console.log(name)
+        // console.log(name)
         if (name == 'func') {
             for (let i = 0; i < FUNCTIONS.length; i++) {
                 if (FUNCTIONS[i].title == name) {

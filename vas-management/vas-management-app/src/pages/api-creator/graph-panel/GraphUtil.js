@@ -77,12 +77,12 @@ export const getNode = (data) => {
 }
 
 export const toJsonGraph = (xml) => {
-    let nodes = [], edges = [];
+    let nodes = [], edges = [], data = [];
 
-    const createNodeByTag = (tag, id) => {
+    const createNodeByTag = (tag) => {
         let p = tag.getAttribute("pos").split(",");
         return {
-            id: id,
+            id: tag.getAttribute("id"),
             type: tag.getAttribute("nodeCType"),
             data: {
                 label: tag.getAttribute("type"),
@@ -92,44 +92,73 @@ export const toJsonGraph = (xml) => {
         }
     }
 
-    const getEdges = () => {
+    const getDataObj = (blk) => {
+        let d = {
+            id: blk.getAttribute("id"),
+            props: []
+        }
+        let variables = blk.getElementsByTagName('variable');
+        for (let i = 0; i < variables.length; i++) {
+            d.props.push({
+                name: variables[i].getAttribute("name"),
+                value: variables[i].textContent
+            })
+        }
+        return d;
+    }
 
+    const getXmlDoc = (str) => {
+        try {
+            let parser = new DOMParser();
+            return parser.parseFromString(str, "text/xml");
+        } catch (e) {
+            console.log(e)
+            return null;
+        }
     }
 
     try {
-        let parser = new DOMParser();
-        let xmlDoc = parser.parseFromString(xml, "text/xml");
-        let blocks = xmlDoc.getElementsByTagName("block");
-        edges = JSON.parse(xmlDoc.getElementsByTagName("conn")[0]?.textContent || "[]");
-        for (let i = 0; i < blocks.length; i++) {
-            let blk = blocks[i];
-            if (blk.getAttribute("nodeCType") == "startNode") {
-                let p = blk.getAttribute("pos").split(",");
-                nodes.push({
-                    id: "start",
-                    type: blk.getAttribute("nodeCType"),
-                    data: {
-                        label: "start"
-                    },
-                    position: { x: p[0], y: p[1] }
-                })
-            } else if (blk.getAttribute("type") === "branch") {
-                nodes.push(createNodeByTag(blk, blk.getAttribute("id")));
-                let cases = blk.getElementsByTagName("case");
-                for (let j = 0; j < cases.length; j++) {
-                    nodes.push(createNodeByTag(cases[j], cases[j].getAttribute("id")));
+        let xmlDoc = getXmlDoc(xml);
+        if (xmlDoc) {
+            let blocks = xmlDoc.getElementsByTagName("block");
+            edges = JSON.parse(xmlDoc.getElementsByTagName("conn")[0]?.textContent || "[]");
+            for (let i = 0; i < blocks.length; i++) {
+                let blk = blocks[i];
+                if (blk.getAttribute("nodeCType") == "startNode") {
+                    let p = blk.getAttribute("pos").split(",");
+                    nodes.push({
+                        id: "start",
+                        type: blk.getAttribute("nodeCType"),
+                        data: {
+                            label: "start"
+                        },
+                        position: { x: p[0], y: p[1] }
+                    })
+                } else if (blk.getAttribute("type") === "branch") {
+                    nodes.push(createNodeByTag(blk));
+                    data.push(getDataObj(blk));
+
+                    let cases = blk.getElementsByTagName("case");
+                    for (let j = 0; j < cases.length; j++) {
+                        nodes.push(createNodeByTag(cases[j]));
+                        data.push(getDataObj(blk));
+                    }
+
+                    let defaultCase = blk.getElementsByTagName("default");
+                    if (defaultCase && defaultCase[0]) {
+                        nodes.push(createNodeByTag(defaultCase[0]));
+                        data.push(getDataObj(blk));
+                    }
+                } else {
+                    nodes.push(createNodeByTag(blk));
+                    data.push(getDataObj(blk));
                 }
-                let defaultCase = blk.getElementsByTagName("default");
-                if (defaultCase && defaultCase[0]) {
-                    nodes.push(createNodeByTag(defaultCase[0], defaultCase[0].getAttribute("id")));
-                }
-            } else {
-                nodes.push(createNodeByTag(blk, blk.getAttribute("id")));
             }
         }
         return {
             nodes,
             edges,
+            data,
         }
     } catch (e) {
         console.log(e)

@@ -18,14 +18,14 @@ const useStyles = createUseStyles({
     },
 })
 
-const AssignNodePropPanel = ({ node, onNodeDataChange }) => {
+const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     const classes = useStyles();
     const { control, handleSubmit } = useForm({
         defaultValues: {
             // name: node.data.name,
         }
     });
-    const [variables, setVariables] = useState(node.props || []);
+    const [variables, setVariables] = useState(data?.props || []);
 
     // props: {
     //     id: 9,
@@ -33,13 +33,14 @@ const AssignNodePropPanel = ({ node, onNodeDataChange }) => {
     // }
 
     const onSubmit = data => {
-        console.log(data)
         setVariables(vars => (vars || []).concat(data))
     };
 
     useEffect(() => {
-        let props = { id: node.id, data: variables }
-        onNodeDataChange(props);
+        if (variables.length > 0) {
+            let props = { id: node.id, data: variables }
+            onNodeDataChange(props);
+        }
     }, [variables])
 
     return (

@@ -28,6 +28,7 @@ const nodeTypes = {
     returnNode: ReturnNode,
 }
 
+let nodeData = [];
 const Graph = () => {
     const graphWrapper = useRef(null);
     const handleType = useRef('')
@@ -46,11 +47,15 @@ const Graph = () => {
     const removedEdge = useRecoilValue(removedEdgeAtom)
     const [processedXml, setProcessedXml] = useRecoilState(processedXmlAtom);
     const graphApi = useRecoilValue(apiOfApiCreatorAtom)
-    const [apiUpdateEvent, setapiUpdateEventAtom] = useRecoilState(apiUpdateEventAtom);
 
     useEffect(() => {
         let elemns = [].concat(graphApi.graphElements.nodes).concat(graphApi.graphElements.edges)
         setElements(elemns);
+        nodeData = graphApi.graphElements.data.length > 0 ? graphApi.graphElements.data : graphApi.graphElements.nodes.map(e => {
+            return {
+                id: e.id
+            }
+        })
     }, [graphApi])
 
     const onLoad = (rfi) => {
@@ -103,6 +108,12 @@ const Graph = () => {
             node.position = position;
             let nElements = getNode(node);
             setElements((es) => es.concat(nElements));
+
+            nodeData = nodeData.concat(nElements.map(e => {
+                return {
+                    id: e.id
+                }
+            }))
         } else {
             setGraphMsg(validated);
         }
@@ -129,13 +140,21 @@ const Graph = () => {
 
     const onNodeDataChange = props => {
         console.log(props)
-        setElements(els => els.map(node => {
-            if (node.id === props.id) {
-                let p = (node.props || []).concat(props.data);
-                return { ...node, props: p };
+        // nodeData.filter(d => d.id == props.id)[0]?.props = props.data
+
+        // for (let i = 0; i < nodeData.length; i++) {
+        //     if (nodeData[i].id == props.id) {
+        //         nodeData[i].props = props.data;
+        //     }
+        // }
+
+        nodeData = nodeData.map(d => {
+            if (d.id == props.id) {
+                return { id: d.id, props: props.data }
             }
-            return node;
-        }))
+            return d;
+        })
+        console.log(nodeData)
     }
 
     const dismissPanel = useCallback(() => {
@@ -154,7 +173,7 @@ const Graph = () => {
                 edgeArr.push(e);
             }
         }
-        return new XmlWriter(graphApi, nodeArr, edgeArr).write()
+        return new XmlWriter(graphApi, nodeArr, edgeArr, nodeData).write()
     }
 
     const onGraphSave = () => {
@@ -182,10 +201,13 @@ const Graph = () => {
     }
 
     const getForm = useCallback((node) => {
-        console.log({node})
         let Comp = getPropComponent(node.data.label)
-        return <Comp node={node} onNodeDataChange={onNodeDataChange} />
-    }, [elements])
+        let d = nodeData.filter(n => n.id == node.id)[0];
+        // console.log(nodeData)
+        // console.log(node.id)
+        // console.log(d)
+        return <Comp node={node} data={d} onNodeDataChange={onNodeDataChange} />
+    }, [elements, nodeData])
 
     const onGraphBuild = useCallback(() => {
         if (reactFlowInstance) {
@@ -193,7 +215,7 @@ const Graph = () => {
             setProcessedXml(xml)
             toggleCodeViewerPanel();
         }
-    }, [elements])
+    }, [])
 
     const getNodeCount = () => {
         return elements.filter(e => isNode(e)).length;
