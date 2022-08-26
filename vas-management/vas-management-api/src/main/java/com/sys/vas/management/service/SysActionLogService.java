@@ -48,7 +48,6 @@ public class SysActionLogService {
                 .stream()
                 .map(m -> {
                     String[] arr = m.getLog().split("\\|");
-                    System.out.println(arr[0]);
                     return UserAction.builder()
                             .timestamp(m.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                             .type(arr[0])

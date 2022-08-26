@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sys.vas.management.dto.HealthStatResponseDto;
+import com.sys.vas.management.dto.entity.SysConfigEntity;
+import com.sys.vas.management.repository.SysConfigRepository;
 import com.sys.vas.management.util.WcResponse;
 import com.sys.vas.management.util.WebClient;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,18 @@ public class ConfigService {
 
     @Value("${app.service.endpoints}")
     private String endpoints;
+
+    private SysConfigRepository sysConfigRepository;
+
+    /**
+     *
+     * @param sysConfigRepository
+     */
+    public ConfigService(
+            SysConfigRepository sysConfigRepository
+    ) {
+        this.sysConfigRepository = sysConfigRepository;
+    }
 
     /**
      *
@@ -47,6 +61,7 @@ public class ConfigService {
                         .build()
                 );
             } catch (Exception e) {
+                log.error("SvrHealthCheck|Error|{}", e.getMessage());
                 data.add(HealthStatResponseDto.builder()
                         .name(name)
                         .status(false)
@@ -55,5 +70,13 @@ public class ConfigService {
             }
         });
         return data;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public SysConfigEntity getSmsStatsData() {
+        return sysConfigRepository.findAll().get(0);
     }
 }

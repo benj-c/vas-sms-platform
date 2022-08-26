@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.sys.vas.datamodel.entity.SmsHistoryEntity;
 import com.sys.vas.datamodel.repository.SmsHistoryRepository;
+import com.sys.vas.datamodel.repository.SysConfigRepository;
 import com.sys.vas.stream.source.FinalOutSource;
 import com.sys.vas.datamodel.entity.ApiEntity;
 import com.sys.vas.datamodel.entity.CxResponseEntity;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -25,18 +27,22 @@ public class ResponseExecutor {
     private CxResponseRepository cxResponseRepository;
     private ApiRepository apiRepository;
     private SmsHistoryRepository smsHistoryRepository;
+    private SysConfigRepository sysConfigRepository;
 
     public ResponseExecutor(
             CxResponseRepository cxResponseRepository,
             ApiRepository apiRepository,
-            SmsHistoryRepository smsHistoryRepository
+            SmsHistoryRepository smsHistoryRepository,
+            SysConfigRepository sysConfigRepository
     ) {
         this.cxResponseRepository = cxResponseRepository;
         this.apiRepository = apiRepository;
         this.smsHistoryRepository = smsHistoryRepository;
+        this.sysConfigRepository = sysConfigRepository;
     }
 
     @Async("responseExecutorPool")
+    @Transactional
     public void executeResponse(VasTransactionMsg srm) {
         log.info("Msg Received from the Queue : " + srm.toString());
         try {
@@ -70,13 +76,15 @@ public class ResponseExecutor {
         }
     }
 
-    private void sendSms(String destinationNo, String msg, String sourcePort, String correlationId, VasTransactionMsg srm) {
+    @Transactional
+    public void sendSms(String destinationNo, String msg, String sourcePort, String correlationId, VasTransactionMsg srm) {
         log.info("{}|CustomerSMS|sms:{}, port:{}, destination:{}", correlationId, msg, sourcePort, destinationNo);
         //TODO: send sms
         save(srm, msg);
+        sysConfigRepository.incrementOutSmsCount();
     }
 
-    private void save(VasTransactionMsg srm, String sms) {
+    public void save(VasTransactionMsg srm, String sms) {
         SmsHistoryEntity smsHistoryEntity = new SmsHistoryEntity();
         smsHistoryEntity.setIncomingSms(srm.getOriginalSms());
         smsHistoryEntity.setResponseSms(sms);

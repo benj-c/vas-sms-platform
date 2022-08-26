@@ -2,6 +2,7 @@ package com.sys.vas.management.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sys.vas.management.dto.*;
+import com.sys.vas.management.dto.entity.SysConfigEntity;
 import com.sys.vas.management.service.ConfigService;
 import com.sys.vas.management.service.SysActionLogService;
 import lombok.extern.slf4j.Slf4j;
@@ -71,4 +72,26 @@ public class ConfigController {
         }
     }
 
+    /**
+     *
+     * @return
+     */
+    @GetMapping(
+            path = "/config/sms/stats",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @RolesAllowed(UserRoles.USER)
+    public ResponseEntity<Response> getSmsStats() {
+        long startTime = System.currentTimeMillis();
+        log.info("Initiating|getSmsStats");
+        try {
+            SysConfigEntity sys = configService.getSmsStatsData();
+            Response response = Response.success(sys)
+                    .build(ResponseCodes.OPERATION_SUCCESS);
+            log.info("Res|{}", response.toString());
+            return ResponseEntity.ok(response);
+        } finally {
+            log.info("Completed|getSmsStats|ProcessingTime:{}ms", System.currentTimeMillis() - startTime);
+        }
+    }
 }

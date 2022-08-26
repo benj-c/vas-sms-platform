@@ -19,6 +19,7 @@ import com.sys.vas.datamodel.entity.ApiEntity;
 import com.sys.vas.datamodel.entity.ApiHistoryEntity;
 import com.sys.vas.datamodel.repository.ApiHistoryRepository;
 import com.sys.vas.datamodel.repository.ApiRepository;
+import com.sys.vas.datamodel.repository.SysConfigRepository;
 import com.sys.vas.exception.ApiNotFoundException;
 import com.sys.vas.exception.InParamNotFoundException;
 import com.sys.vas.exception.MissingParamException;

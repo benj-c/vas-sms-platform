@@ -1,10 +1,9 @@
-import React, { useEffect, useState, lazy } from "react";
+import React from "react";
 import { createUseStyles } from "react-jss";
-import { ActivityItem, DefaultPalette } from "@fluentui/react";
 
-import { getFlows } from "../../common/HttpClient";
 import ServiceStatsPanel from "./ServiceStatsPanel";
 import UserActionLog from "./UserActionLog";
+import UsageStats from "./UsageStats";
 
 const useStyles = createUseStyles({
     pageRoot: {
@@ -19,7 +18,7 @@ const useStyles = createUseStyles({
 
 const Home = props => {
     const classes = useStyles();
-    
+
     return (
         <div className={classes.pageRoot}>
             <div className="ms-Grid" dir="ltr">
@@ -27,6 +26,7 @@ const Home = props => {
                     <div className="ms-Grid-col ms-sm6 ms-md4 ms-lg9">
                         <h2 className={classes.sectionHeader}>Dashboard</h2>
                         <ServiceStatsPanel />
+                        <UsageStats />
                     </div>
                     <div className="ms-Grid-col ms-sm6 ms-md8 ms-lg3">
                         <UserActionLog />

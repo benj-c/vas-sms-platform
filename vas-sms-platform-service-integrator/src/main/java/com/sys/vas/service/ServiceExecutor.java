@@ -1,6 +1,7 @@
 package com.sys.vas.service;
 
 import com.sys.vas.datamodel.messages.VasTransactionMsg;
+import com.sys.vas.datamodel.repository.SysConfigRepository;
 import com.sys.vas.kernal.Kernel;
 import com.sys.vas.stream.source.CxResponseSource;
 import com.sys.vas.util.Constants;
