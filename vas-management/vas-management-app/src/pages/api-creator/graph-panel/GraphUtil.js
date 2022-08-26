@@ -85,7 +85,8 @@ export const toJsonGraph = (xml) => {
             id: id,
             type: tag.getAttribute("nodeCType"),
             data: {
-                label: tag.getAttribute("type")
+                label: tag.getAttribute("type"),
+                icon: tag.getAttribute("icon"),
             },
             position: { x: p[0], y: p[1] }
         }

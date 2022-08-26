@@ -110,7 +110,7 @@ const useStyles = createUseStyles({
 export const getPropComponent = name => {
     if (name) {
         console.log(name)
-        if (name.startsWith('Function')) {
+        if (name == 'func') {
             for (let i = 0; i < FUNCTIONS.length; i++) {
                 if (FUNCTIONS[i].title == name) {
                     let c = FUNCTIONS[i].propsComponent;

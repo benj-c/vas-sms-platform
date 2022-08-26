@@ -113,7 +113,7 @@ const Graph = () => {
     };
 
     const onNodeDoubleClick = useCallback((evt, node) => {
-        if (node.type !== 'startNode' && node.type !== 'returnNode') {
+        if (node.type !== 'startNode' && node.type !== 'returnNode' && node.data.label !== 'branch') {
             setSelectedNode(node)
             togglePanel()
         }
@@ -127,9 +127,14 @@ const Graph = () => {
         setGraphMsg(null)
     }, [reactFlowInstance])
 
-    const onNodeDataChange = data => {
-        let node = elements.filter(n => n.id == data.id)[0]
-        console.log({ node, data })
+    const onNodeDataChange = props => {
+        console.log(props)
+        setElements(els => els.map(node => {
+            if (node.id === props.id) {
+                return { ...node, props: props.data };
+            }
+            return node;
+        }))
     }
 
     const dismissPanel = useCallback(() => {
@@ -260,7 +265,7 @@ const Graph = () => {
 
             {selectedNode && (
                 <Panel
-                    headerText={`Properties | Node: ${selectedNode.data.label} ( ${selectedNode.id} )`}
+                    headerText={`Properties`}
                     isOpen={isPanelOpen}
                     onDismiss={dismissPanel}
                     closeButtonAriaLabel="Close"
@@ -280,7 +285,7 @@ const Graph = () => {
                 <CodeViewer />
             </Panel>
 
-            
+
             <Panel
                 headerText={`Save API`}
                 isOpen={isSaveOpen}

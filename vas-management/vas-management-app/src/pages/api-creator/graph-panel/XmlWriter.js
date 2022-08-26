@@ -1,7 +1,7 @@
 class XmlWriter {
     constructor(currentApi, nodes, edges) {
-        console.log({nodes})
-        console.log({edges})
+        // console.log({nodes})
+        // console.log({edges})
         this.flow = currentApi;
         this.nodes = nodes;
         this.edges = edges;
@@ -21,8 +21,9 @@ class XmlWriter {
         return xml;
     }
     getNodeInitPart(node) {
+        console.log(node)
         let lbl = node.data.label.startsWith("Function") ? "func" : node.data.label;
-        return `<block id="${node.id}" type="${lbl}" nodeCType="${node.type}" pos="${this.getPos(node)}">`
+        return `<block id="${node.id}" type="${lbl}" nodeCType="${node.type}" pos="${this.getPos(node)}" icon="${node.data.icon}">`
     }
     getNodeNextPart(next) {
         return `<next-node>${next}</next-node>`;
@@ -81,7 +82,6 @@ class XmlWriter {
         for (let i = 0; i < this.edges.length; i++) {
             let ed = this.edges[i];
             let node = this.getNodeById(ed.source)
-            console.log(ed.source, node)
             // if (node.data.label != 'Case' && node.data.label != 'Default') {
             if (node.data.label.startsWith('Function')) {
                 xml += this.getFunctionXml(node, ed.target);
