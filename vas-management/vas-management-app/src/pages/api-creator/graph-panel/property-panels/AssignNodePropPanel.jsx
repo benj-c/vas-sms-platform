@@ -1,30 +1,68 @@
-import { PrimaryButton, Text, TextField } from '@fluentui/react';
+import { DefaultPalette, PrimaryButton, Text, TextField } from '@fluentui/react';
+import { useEffect } from 'react';
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form'
+import { createUseStyles } from 'react-jss';
+
+const useStyles = createUseStyles({
+    varItem: {
+        color: DefaultPalette.white,
+        padding: '1rem',
+        background: 'rgba(255, 255, 255, 0.1)',
+        borderRadius: '0.25rem',
+        margin: '0.75rem 0',
+        borderBottom: '2px solid transparent',
+        '&:hover': {
+            borderBottomColor: DefaultPalette.themePrimary,
+        }
+    },
+})
 
 const AssignNodePropPanel = ({ node, onNodeDataChange }) => {
+    const classes = useStyles();
     const { control, handleSubmit } = useForm({
         defaultValues: {
             // name: node.data.name,
         }
     });
+    const [variables, setVariables] = useState(node.props || []);
 
     // props: {
     //     id: 9,
     //     data: [],
     // }
 
-    const onSubmit = data => { };
+    const onSubmit = data => {
+        console.log(data)
+        setVariables(vars => (vars || []).concat(data))
+    };
+
+    useEffect(() => {
+        let props = { id: node.id, data: variables }
+        onNodeDataChange(props);
+    }, [variables])
 
     return (
         <div>
-            <Text variant='mediumPlus' style={{ textTransform: 'capitalize' }}>Node: {node.data.label}, ID: {node.id}</Text>
+            {/* <Text variant='mediumPlus' style={{ textTransform: 'capitalize' }}>{node.data.label} node</Text> */}
+            <br />
+            {/* <Text variant='medium'>Variables</Text> */}
+
             <ul>
-                {node.props && node.props?.data?.length > 0 && node.props?.data?.map((item, key) => (
-                    <li key={key}></li>
+                {variables.length > 0 && variables.map((item, key) => (
+                    <li key={key} className={classes.varItem}>
+                        Variable name: {item.name}
+                        <br />
+                        Value: {item.value}
+                    </li>
                 ))}
             </ul>
+
+            {variables.length == 0 && (
+                <Text variant='mediumPlus'>No variables</Text>
+            )}
+
             <form style={{ marginTop: '1rem' }}>
-                <Text variant='medium'>Variables</Text>
                 <div style={{ margin: '1rem 0' }}>
                     <Controller
                         name="name"
@@ -44,7 +82,7 @@ const AssignNodePropPanel = ({ node, onNodeDataChange }) => {
                         />}
                     />
                 </div>
-                <PrimaryButton text="Submit" onClick={handleSubmit(onSubmit)} />
+                <PrimaryButton text="Set" onClick={handleSubmit(onSubmit)} />
             </form>
         </div>
     )

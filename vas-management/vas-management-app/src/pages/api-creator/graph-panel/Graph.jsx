@@ -131,7 +131,8 @@ const Graph = () => {
         console.log(props)
         setElements(els => els.map(node => {
             if (node.id === props.id) {
-                return { ...node, props: props.data };
+                let p = (node.props || []).concat(props.data);
+                return { ...node, props: p };
             }
             return node;
         }))
@@ -181,6 +182,7 @@ const Graph = () => {
     }
 
     const getForm = useCallback((node) => {
+        console.log({node})
         let Comp = getPropComponent(node.data.label)
         return <Comp node={node} onNodeDataChange={onNodeDataChange} />
     }, [elements])
@@ -265,7 +267,7 @@ const Graph = () => {
 
             {selectedNode && (
                 <Panel
-                    headerText={`Properties`}
+                    headerText={`Properties, ${selectedNode.data.label} Node`}
                     isOpen={isPanelOpen}
                     onDismiss={dismissPanel}
                     closeButtonAriaLabel="Close"

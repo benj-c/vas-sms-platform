@@ -21,12 +21,14 @@ class XmlWriter {
         return xml;
     }
     getNodeInitPart(node) {
-        console.log(node)
         let lbl = node.data.label.startsWith("Function") ? "func" : node.data.label;
         return `<block id="${node.id}" type="${lbl}" nodeCType="${node.type}" pos="${this.getPos(node)}" icon="${node.data.icon}">`
     }
     getNodeNextPart(next) {
         return `<next-node>${next}</next-node>`;
+    }
+    getVariableXml(key, value) {
+        return `<variable name="${key}">${value}</variable>`;
     }
     getStartXml(node, next) {
         let xml = `<block id="0" type="assign" nodeCType="${node.type}" pos="${this.getPos(node)}">`;
@@ -36,6 +38,12 @@ class XmlWriter {
     }
     getAssignXml(node, next) {
         let xml = this.getNodeInitPart(node);
+        if (node.props) {
+            for (let i = 0; i < node.props.length; i++) {
+                let v = node.props[i];
+                xml += this.getVariableXml(v.name, v.value);
+            }
+        }
         xml += this.getNodeNextPart(next)
         xml += `</block>`
         return xml;
