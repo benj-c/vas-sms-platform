@@ -1,9 +1,6 @@
 package com.sys.vas.management.service;
 
-import com.sys.vas.management.dto.ExportXmlDto;
-import com.sys.vas.management.dto.ResponseCodes;
-import com.sys.vas.management.dto.ServiceDetailDto;
-import com.sys.vas.management.dto.ServiceDto;
+import com.sys.vas.management.dto.*;
 import com.sys.vas.management.dto.entity.ActionEntity;
 import com.sys.vas.management.dto.entity.ApiEntity;
 import com.sys.vas.management.dto.entity.ServiceEntity;
@@ -15,6 +12,7 @@ import com.sys.vas.management.util.XmlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -34,9 +32,11 @@ import java.util.stream.Collectors;
 public class VasService {
 
     private ServiceRepository serviceRepository;
+    private SysActionLogService sysActionLogService;
 
-    public VasService(ServiceRepository serviceRepository) {
+    public VasService(ServiceRepository serviceRepository, SysActionLogService sysActionLogService) {
         this.serviceRepository = serviceRepository;
+        this.sysActionLogService = sysActionLogService;
     }
 
     /**
@@ -56,7 +56,6 @@ public class VasService {
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -75,9 +74,9 @@ public class VasService {
     }
 
     /**
-     *
      * @param requestDto
      */
+    @Transactional
     public void update(ServiceUpdateRequestDto requestDto) {
         ServiceEntity fEntity = serviceRepository.findById(requestDto.getId())
                 .orElseThrow(() -> new ApiException(ResponseCodes.SERVICE_NOT_FOUND, "service not found for id:" + requestDto.getId()));
@@ -94,8 +93,21 @@ public class VasService {
             fEntity.setDisable(requestDto.getActive());
         }
         serviceRepository.save(fEntity);
+        sysActionLogService.logEvent(
+                UserAction.builder()
+                        .type("updated")
+                        .target(requestDto.getName())
+                        .comment(requestDto.getDescription())
+                        .build()
+        );
     }
 
+    /**
+     *
+     * @param requestDto
+     * @return
+     */
+    @Transactional
     public long create(CreateServiceRequestDto requestDto) {
         ServiceEntity serviceEntity = new ServiceEntity();
         serviceEntity.setDisable(false);
@@ -104,7 +116,15 @@ public class VasService {
         serviceEntity.setCreatedDate(LocalDate.now());
         serviceEntity.setDisableSms(requestDto.getDisabledSms());
 
-        return serviceRepository.save(serviceEntity).getId();
+        long id = serviceRepository.save(serviceEntity).getId();
+        sysActionLogService.logEvent(
+                UserAction.builder()
+                        .type("created")
+                        .target(requestDto.getName())
+                        .comment(requestDto.getDescription())
+                        .build()
+        );
+        return id;
     }
 
     public ExportXmlDto createXml(long sId) {

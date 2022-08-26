@@ -169,3 +169,17 @@ export const getSmsHistoryByMsisdn = async (msisdn) => {
         method: HttpMethod.GET,
     });
 }
+
+export const getHealthStats = async (msisdn) => {
+    return await _fetch({
+        url: `/config/health`,
+        method: HttpMethod.GET,
+    });
+}
+
+export const getUserActions = async (msisdn) => {
+    return await _fetch({
+        url: `/config/actions`,
+        method: HttpMethod.GET,
+    });
+}

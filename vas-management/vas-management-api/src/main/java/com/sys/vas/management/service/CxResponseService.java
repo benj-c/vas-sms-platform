@@ -2,6 +2,7 @@ package com.sys.vas.management.service;
 
 import com.sys.vas.management.dto.CxResponseDto;
 import com.sys.vas.management.dto.ResponseCodes;
+import com.sys.vas.management.dto.UserAction;
 import com.sys.vas.management.dto.entity.ApiEntity;
 import com.sys.vas.management.dto.entity.CxResponseEntity;
 import com.sys.vas.management.dto.request.CreateCxResponseRequestDto;
@@ -10,11 +11,12 @@ import com.sys.vas.management.exception.ApiException;
 import com.sys.vas.management.repository.ApiRepository;
 import com.sys.vas.management.repository.CxResponseRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class CxResponseService {
+public class CxResponseService extends SysActionLogService {
 
     private CxResponseRepository cxResponseRepository;
     private ApiRepository apiRepository;
@@ -27,10 +29,20 @@ public class CxResponseService {
         this.apiRepository = apiRepository;
     }
 
+    /**
+     *
+     * @param apiId
+     * @return
+     */
     public List<CxResponseDto> getResponsesByApiId(long apiId) {
         return cxResponseRepository.findByApiId(apiId);
     }
 
+    /**
+     *
+     * @param requestDto
+     */
+    @Transactional
     public void update(UpdateCxResponseRequestDto requestDto) {
         CxResponseEntity fEntity = cxResponseRepository.findById(requestDto.getId())
                 .orElseThrow(() -> new ApiException(ResponseCodes.CX_RESPONSE_NOT_FOUND, "cx response not found"));
@@ -43,10 +55,20 @@ public class CxResponseService {
         if (requestDto.getSms() != null) {
             fEntity.setSms(requestDto.getSms());
         }
-
         cxResponseRepository.save(fEntity);
+        logEvent(
+                UserAction.builder()
+                        .type("updated")
+                        .target("an SMS")
+                        .build()
+        );
     }
 
+    /**
+     *
+     * @param requestDto
+     */
+    @Transactional
     public void create(CreateCxResponseRequestDto requestDto) {
         ApiEntity apiEntity = apiRepository.findById(requestDto.getApiId())
                 .orElseThrow(() -> new ApiException(ResponseCodes.API_NOT_FOUND, "api not found"));
@@ -59,5 +81,11 @@ public class CxResponseService {
         cxResponse.setApi(apiEntity);
 
         cxResponseRepository.save(cxResponse);
+        logEvent(
+                UserAction.builder()
+                        .type("added")
+                        .target("new SMS")
+                        .build()
+        );
     }
 }

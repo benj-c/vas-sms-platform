@@ -3,6 +3,7 @@ package com.sys.vas.management.service;
 import com.sys.vas.management.dto.ActionByServiceDto;
 import com.sys.vas.management.dto.ResponseCodes;
 import com.sys.vas.management.dto.ServiceDto;
+import com.sys.vas.management.dto.UserAction;
 import com.sys.vas.management.dto.entity.ActionEntity;
 import com.sys.vas.management.dto.entity.ApiEntity;
 import com.sys.vas.management.dto.entity.ServiceEntity;
@@ -13,11 +14,12 @@ import com.sys.vas.management.repository.ActionRepository;
 import com.sys.vas.management.repository.ApiRepository;
 import com.sys.vas.management.repository.ServiceRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class ActionService {
+public class ActionService extends SysActionLogService {
 
     private ActionRepository actionRepository;
     private ServiceRepository serviceRepository;
@@ -34,9 +36,9 @@ public class ActionService {
     }
 
     /**
-     *
      * @param requestDto
      */
+    @Transactional
     public void update(ActionUpdateRequestDto requestDto) {
         ActionEntity fEntity = actionRepository.findById(requestDto.getId())
                 .orElseThrow(() -> new ApiException(ResponseCodes.ACTION_NOT_FOUND, "action not found for id:" + requestDto.getId()));
@@ -44,6 +46,11 @@ public class ActionService {
             fEntity.setDescription(requestDto.getDescription());
         }
         actionRepository.save(fEntity);
+        logEvent(UserAction.builder()
+                .type("updated")
+                .target("an existing action: " + requestDto.getDescription())
+                .build()
+        );
     }
 
     public List<ActionByServiceDto> getActionsByServiceId(Long sid) {
@@ -54,6 +61,11 @@ public class ActionService {
 //        return acts;
     }
 
+    /**
+     *
+     * @param requestDto
+     */
+    @Transactional
     public void create(CreateActionRequestDto requestDto) {
         ServiceEntity serviceEntity = serviceRepository.findById(requestDto.getServiceId())
                 .orElseThrow(() -> new ApiException(ResponseCodes.SERVICE_NOT_FOUND, "service not found for id:" + requestDto.getServiceId()));
@@ -67,5 +79,10 @@ public class ActionService {
         actionEntity.setApi(apiEntity);
 
         actionRepository.save(actionEntity);
+        logEvent(UserAction.builder()
+                .type("created")
+                .target("new action: " + requestDto.getDescription())
+                .build()
+        );
     }
 }

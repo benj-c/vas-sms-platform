@@ -2,6 +2,7 @@ package com.sys.vas.management.service;
 
 import com.sys.vas.management.dto.KeywordDto;
 import com.sys.vas.management.dto.ResponseCodes;
+import com.sys.vas.management.dto.UserAction;
 import com.sys.vas.management.dto.entity.ActionEntity;
 import com.sys.vas.management.dto.entity.KeywordEntity;
 import com.sys.vas.management.dto.request.CreateKeywordRequestDto;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class KeywordService {
+public class KeywordService extends SysActionLogService {
 
     private KeywordRepository keywordRepository;
     private ActionRepository actionRepository;
@@ -27,6 +28,11 @@ public class KeywordService {
         this.actionRepository = actionRepository;
     }
 
+    /**
+     *
+     * @param sid
+     * @return
+     */
     public List<KeywordDto> getKeywordsByActionId(Long sid) {
         return keywordRepository.findByActionId(sid);
 //        if (acts.isEmpty()) {
@@ -35,6 +41,10 @@ public class KeywordService {
 //        return acts;
     }
 
+    /**
+     *
+     * @param requestDto
+     */
     @Transactional
     public void update(KeywordDto requestDto) {
         KeywordEntity fEntity = keywordRepository.findById(requestDto.getId())
@@ -46,8 +56,19 @@ public class KeywordService {
             fEntity.setRegEx(requestDto.getRegex());
         }
         keywordRepository.save(fEntity);
+        logEvent(
+                UserAction.builder()
+                        .type("updated")
+                        .target("an existing keyword/regex")
+                        .build()
+        );
     }
 
+    /**
+     *
+     * @param requestDto
+     */
+    @Transactional
     public void create(CreateKeywordRequestDto requestDto) {
         ActionEntity actionEntity = actionRepository.findById(requestDto.getActionId())
                 .orElseThrow(() -> new ApiException(ResponseCodes.ACTION_NOT_FOUND, "action not found for id:" + requestDto.getActionId()));
@@ -58,5 +79,11 @@ public class KeywordService {
         keywordEntity.setAction(actionEntity);
 
         keywordRepository.save(keywordEntity);
+        logEvent(
+                UserAction.builder()
+                        .type("added")
+                        .target("new keyword/regex")
+                        .build()
+        );
     }
 }

@@ -44,7 +44,7 @@ const ServiceContainer = () => {
     }, [])
 
     const selectFlow = f => {
-        history.push(`/builder?ref=${f.id}`)
+        history.push(`/service?ref=${f.id}`)
     }
 
     return (

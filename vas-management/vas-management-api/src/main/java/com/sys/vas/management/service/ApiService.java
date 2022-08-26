@@ -22,24 +22,20 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-public class ApiService {
+public class ApiService extends SysActionLogService {
 
     private ApiRepository apiRepository;
     private ApiHistoryRepository apiHistoryRepository;
-    private SysActionLogService sysActionLogService;
 
-    ApiService(
+    public ApiService(
             ApiRepository apiRepository,
-            ApiHistoryRepository apiHistoryRepository,
-            SysActionLogService sysActionLogService
+            ApiHistoryRepository apiHistoryRepository
     ) {
         this.apiRepository = apiRepository;
         this.apiHistoryRepository = apiHistoryRepository;
-        this.sysActionLogService = sysActionLogService;
     }
 
     /**
-     *
      * @return
      */
     public List<ApiResponseDto> getAllApis() {
@@ -47,10 +43,10 @@ public class ApiService {
     }
 
     /**
-     *
      * @param requestDto
      * @return
      */
+    @Transactional
     public ApiCreateResponseDto create(CreateApiRequestDto requestDto) {
         ApiHistoryEntity apiHistory = new ApiHistoryEntity();
         apiHistory.setCommitMessage("Initial commit");
@@ -71,6 +67,13 @@ public class ApiService {
         apiHistory.setApi(apiEntity);
 
         ApiHistoryEntity hs = apiHistoryRepository.save(apiHistory);
+        logEvent(UserAction.builder()
+                .type("created")
+                .target(requestDto.getName())
+                .comment(requestDto.getDescription())
+                .build()
+        );
+
         return ApiCreateResponseDto.builder()
                 .id(hs.getApi().getId())
                 .commitId(hs.getCommitId())
@@ -78,7 +81,6 @@ public class ApiService {
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -88,10 +90,10 @@ public class ApiService {
     }
 
     /**
-     *
      * @param updateApiDto
      * @return
      */
+    @Transactional
     public long update(UpdateApiDto updateApiDto) {
         ApiEntity fApi = apiRepository.findById(updateApiDto.getId())
                 .orElseThrow(() -> new ApiException(ResponseCodes.API_NOT_FOUND, "API not found for ID:" + updateApiDto.getId()));
@@ -103,15 +105,19 @@ public class ApiService {
             fApi.setDescription(updateApiDto.getDescription());
         }
         long id = apiRepository.save(fApi).getId();
-        sysActionLogService.logEvent("API " + fApi.getName() + " was updated by " + ApiUtil.getAuthUserName());
+        logEvent(UserAction.builder()
+                .type("updated")
+                .target(fApi.getName())
+                .build()
+        );
         return id;
     }
 
     /**
-     *
      * @param addApiCommitRequest
      * @return
      */
+    @Transactional
     public String commit(AddApiCommitRequest addApiCommitRequest) {
         ApiEntity fApi = apiRepository.findById(addApiCommitRequest.getApiId())
                 .orElseThrow(() -> new ApiException(ResponseCodes.API_NOT_FOUND, "API not found for ID:" + addApiCommitRequest.getApiId()));
@@ -125,7 +131,14 @@ public class ApiService {
         commit.setCommitedDateTime(LocalDateTime.now());
         commit.setApi(fApi);
 
-        return apiHistoryRepository.save(commit).getCommitId();
+        String cmid = apiHistoryRepository.save(commit).getCommitId();
+        logEvent(UserAction.builder()
+                .type("updated")
+                .target(fApi.getName())
+                .comment("New API commit " + commit.getVersion())
+                .build()
+        );
+        return cmid;
     }
 
     public void setActiveApi(long apiId, String commitId) {
@@ -133,7 +146,6 @@ public class ApiService {
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -142,12 +154,21 @@ public class ApiService {
     }
 
     /**
-     *
      * @param apiId
      * @param commitId
      */
     @Transactional
     public void deploy(long apiId, String commitId) {
+        List<ApiHistoryEntity> list = apiHistoryRepository.findAllByApiId(apiId);
+        if (list.isEmpty()) {
+            throw new ApiException(ResponseCodes.API_NOT_FOUND, "API not found for ID:" + apiId);
+        }
         apiHistoryRepository.updateApiSetActive(apiId, commitId);
+        logEvent(UserAction.builder()
+                .type("deployed")
+                .target(list.get(0).getApi().getName())
+                .comment("Production deployment")
+                .build()
+        );
     }
 }

@@ -89,9 +89,9 @@ export const routes = [
     },
     {
         id: 5,
-        path: "/builder",
-        name: "Builder",
-        description: "Service Builder",
+        path: "/service",
+        name: "Service",
+        description: "Service Information",
         exact: false,
         main: () => <Builder />,
         scope: [],
