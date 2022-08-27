@@ -17,7 +17,7 @@ class XmlWriter {
         return `${node.position.x},${node.position.y}`;
     }
     getDataObj(id) {
-        return this.data.filter(e => e.id == id)[0];
+        return this.data.filter(e => e.id === id)[0];
     }
     getHeaderXml() {
         let xml = `<name>${this.flow.name}</name>`;
@@ -31,8 +31,15 @@ class XmlWriter {
     getNodeNextPart(next) {
         return `<next-node>${next}</next-node>`;
     }
-    getVariableXml(key, value) {
-        return `<variable name="${key}">${value}</variable>`;
+    getVariableXml(variables) {
+        let xml = "";
+        if (variables.length > 0) {
+            for (let i = 0; i < variables.length; i++) {
+                let v = variables[i];
+                xml += `<variable name="${v.name}">${v.value}</variable>`
+            }
+        }
+        return xml;
     }
     getStartXml(node, next) {
         let xml = `<block id="0" type="assign" nodeCType="${node.type}" pos="${this.getPos(node)}">`;
@@ -44,12 +51,7 @@ class XmlWriter {
         let xml = this.getNodeInitPart(node);
         let dt = this.getDataObj(node.id);
         console.log(dt)
-        if (dt?.variables?.length > 0) {
-            for (let i = 0; i < dt.variables.length; i++) {
-                let v = dt.variables[i];
-                xml += this.getVariableXml(v.name, v.value);
-            }
-        }
+        xml += this.getVariableXml(dt?.variables || []);
         xml += this.getNodeNextPart(next)
         xml += `</block>`
         return xml;
@@ -62,19 +64,23 @@ class XmlWriter {
     }
     getSwitchXml() {
         let xml = ``;
-        let switches = this.nodes.filter(f => f.data.label == 'branch')
+        let switches = this.nodes.filter(f => f.data.label === 'branch')
         for (let i = 0; i < switches.length; i++) {
             xml += this.getNodeInitPart(switches[i])
             let sEdges = this.edges.filter(f => f.source == switches[i].id)
             for (let j = 0; j < sEdges.length; j++) {
                 let nd = this.getNodeById(sEdges[j].target)
                 let ed = this.getEdgeBySourceId(sEdges[j].target)
+                let dt = this.getDataObj(nd.id);
                 if (nd.data.label === 'case') {
-                    xml += `<case id="${nd.id}" type="case" nodeCType="customNode" pos="${this.getPos(nd)}">`
+                    xml += `<case id="${nd.id}" type="case" nodeCType="customNode" pos="${this.getPos(nd)}">`;
+                    xml += `<expression>${dt?.expression}</expression>`
+                    xml += this.getVariableXml(dt?.variables || []);
                     xml += this.getNodeNextPart(ed.target)
                     xml += `</case>`
                 } else {
                     xml += `<default id="${nd.id}" type="default" nodeCType="customNode" pos="${this.getPos(nd)}">`
+                    xml += this.getVariableXml(dt?.variables || []);
                     xml += this.getNodeNextPart(ed.target)
                     xml += `</default>`
                 }

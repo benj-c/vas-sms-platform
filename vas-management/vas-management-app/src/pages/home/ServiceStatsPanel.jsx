@@ -23,7 +23,7 @@ const ServiceStatsPanel = () => {
     const [serviceComponents, setServiceComponents] = useState([]);
 
     useEffect(() => {
-        let interval = setInterval(() => loadStats(), (3000))
+        let interval = setInterval(() => loadStats(), (6000))
         return () => clearInterval(interval)
     }, [])
 
