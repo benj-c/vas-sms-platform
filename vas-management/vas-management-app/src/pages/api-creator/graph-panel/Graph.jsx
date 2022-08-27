@@ -209,13 +209,13 @@ const Graph = () => {
         return <Comp node={node} data={d} onNodeDataChange={onNodeDataChange} />
     }, [elements, nodeData])
 
-    const onGraphBuild = useCallback(() => {
+    const onGraphBuild = () => {
         if (reactFlowInstance) {
             let xml = toXml();
             setProcessedXml(xml)
             toggleCodeViewerPanel();
         }
-    }, [])
+    }
 
     const getNodeCount = () => {
         return elements.filter(e => isNode(e)).length;

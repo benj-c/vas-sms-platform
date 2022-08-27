@@ -162,6 +162,10 @@ const InfoPanel = () => {
             })
         }
 
+        const onCheckout = () => {
+            history.push(`/api-creator?ref=${selectedApiVersion.apiId}&commit=${selectedApiVersion.commitId}`)
+        }
+
         return (
             <>
                 <Text variant="large">API Change History</Text>
@@ -190,6 +194,7 @@ const InfoPanel = () => {
                             <br />
                             <Stack gap={8} horizontal>
                                 <PrimaryButton onClick={onDeploy}>Deploy</PrimaryButton>
+                                <PrimaryButton onClick={onCheckout}>Checkout</PrimaryButton>
                                 <DefaultButton onClick={toggleIsCalloutVisible}>Cancel</DefaultButton>
                             </Stack>
                         </div>
