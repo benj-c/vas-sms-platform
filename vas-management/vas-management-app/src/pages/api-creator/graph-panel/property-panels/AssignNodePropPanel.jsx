@@ -1,4 +1,4 @@
-import { DefaultPalette, PrimaryButton, Text, TextField } from '@fluentui/react';
+import { DefaultPalette, IconButton, PrimaryButton, Text, TextField } from '@fluentui/react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form'
@@ -8,13 +8,14 @@ const useStyles = createUseStyles({
     varItem: {
         color: DefaultPalette.white,
         padding: '1rem',
-        background: 'rgba(255, 255, 255, 0.1)',
+        background: 'rgba(255, 255, 255, 0.03)',
         borderRadius: '0.25rem',
         margin: '0.75rem 0',
         borderBottom: '2px solid transparent',
         display: 'grid',
-        gridTemplateColumns: '95% 5%',
+        gridTemplateColumns: '90% 5% 5%',
         alignItems: 'center',
+        gap: '0.25rem',
         '&:hover': {
             borderBottomColor: DefaultPalette.themePrimary,
             '& i': {
@@ -43,7 +44,12 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     // }
 
     const onSubmit = data => {
-        setVariables(vars => (vars || []).concat(data))
+        setVariables(vars => (vars || []).map(itm => {
+            if (data.name == itm.name) {
+                return { ...itm, ...data };
+            }
+            return itm;
+        }))
     };
 
     useEffect(() => {
@@ -56,6 +62,10 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     const onEditVariableClick = (item) => {
         setValue('name', item.name);
         setValue('value', item.value);
+    }
+
+    const onDeleteVariableClick = (item) => {
+
     }
 
     return (
@@ -73,7 +83,10 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
                             Value: {item.value}
                         </div>
                         <div>
-                            <i class="ms-Icon ms-Icon--Settings" aria-hidden="true" onClick={() => onEditVariableClick(item)}></i>
+                            <IconButton iconProps={{ iconName: 'Settings' }} title="Edit" ariaLabel="Edit" onClick={() => onEditVariableClick(item)} />
+                        </div>
+                        <div>
+                            <IconButton iconProps={{ iconName: 'Delete' }} title="Delete" ariaLabel="Delete" onClick={() => onDeleteVariableClick(item)} />
                         </div>
                     </li>
                 ))}
