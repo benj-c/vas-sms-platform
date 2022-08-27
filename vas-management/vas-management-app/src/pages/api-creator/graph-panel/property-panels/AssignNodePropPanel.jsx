@@ -44,15 +44,21 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     // }
 
     const onSubmit = data => {
+        let isExistingVarUpdate = false;
         setVariables(vars => (vars || []).map(itm => {
             if (data.name == itm.name) {
+                isExistingVarUpdate = true;
                 return { ...itm, ...data };
             }
             return itm;
         }))
+        if (!isExistingVarUpdate) {
+            setVariables(vars => vars.concat(data));
+        }
     };
 
     useEffect(() => {
+        console.log(variables)
         if (variables.length > 0) {
             let props = { id: node.id, data: variables }
             onNodeDataChange(props);
@@ -64,8 +70,8 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
         setValue('value', item.value);
     }
 
-    const onDeleteVariableClick = (item) => {
-
+    const onDeleteVariableClick = (data) => {
+        setVariables(vars => vars.filter(e => e.name != data.name))
     }
 
     return (
