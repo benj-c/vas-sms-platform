@@ -1,8 +1,9 @@
-import { DefaultPalette, IconButton, PrimaryButton, Text, TextField } from '@fluentui/react';
+import { DefaultButton, DefaultPalette, Dialog, DialogFooter, DialogType, IconButton, PrimaryButton, Text, TextField } from '@fluentui/react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form'
 import { createUseStyles } from 'react-jss';
+import useBoolean from '../../../../common/hooks/useBoolean';
 
 const useStyles = createUseStyles({
     varItem: {
@@ -33,10 +34,11 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     const classes = useStyles();
     const { control, handleSubmit, setValue } = useForm({
         defaultValues: {
-            // name: node.data.name,
         }
     });
     const [variables, setVariables] = useState(data?.props || []);
+    const { value: isDeleteDialogVisible, toggle: toggleDeleteDialog, } = useBoolean(false);
+    const [selectedVar, setSelectedVar] = useState(null);
 
     // props: {
     //     id: 9,
@@ -58,7 +60,6 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     };
 
     useEffect(() => {
-        console.log(variables)
         if (variables.length > 0) {
             let props = { id: node.id, data: variables }
             onNodeDataChange(props);
@@ -71,15 +72,18 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     }
 
     const onDeleteVariableClick = (data) => {
-        setVariables(vars => vars.filter(e => e.name != data.name))
+        setSelectedVar(data);
+        toggleDeleteDialog();
+    }
+
+    const deleteVariable = () => {
+        setVariables(vars => vars.filter(e => e.name != selectedVar.name))
+        setSelectedVar(null);
+        toggleDeleteDialog();
     }
 
     return (
         <div>
-            {/* <Text variant='mediumPlus' style={{ textTransform: 'capitalize' }}>{node.data.label} node</Text> */}
-            <br />
-            {/* <Text variant='medium'>Variables</Text> */}
-
             <ul>
                 {variables.length > 0 && variables.map((item, key) => (
                     <li key={key} className={classes.varItem}>
@@ -124,6 +128,23 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
                 </div>
                 <PrimaryButton text="Set" onClick={handleSubmit(onSubmit)} />
             </form>
+
+            <Dialog
+                hidden={!isDeleteDialogVisible}
+                onDismiss={toggleDeleteDialog}
+                dialogContentProps={{
+                    type: DialogType.normal,
+                    title: 'Delete variable',
+                    closeButtonAriaLabel: 'Close',
+                    subText: 'The selected variable will be deleted, Are you sure ?',
+                }}
+            >
+
+                <DialogFooter>
+                    <PrimaryButton onClick={deleteVariable} text="Yes" />
+                    <DefaultButton onClick={toggleDeleteDialog} text="No" />
+                </DialogFooter>
+            </Dialog>
         </div>
     )
 }

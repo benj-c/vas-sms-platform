@@ -285,10 +285,10 @@ const Graph = () => {
                 onElementClick={onElementClick}
                 onPaneClick={onPaneClick}
             >
-                <ActionPanel 
-                onGraphSave={onGraphSave} 
-                onBuild={onGraphBuild} 
-                onDiscard={onDiscard}
+                <ActionPanel
+                    onGraphSave={onGraphSave}
+                    onBuild={onGraphBuild}
+                    onDiscard={onDiscard}
                 />
                 <Controls />
                 <Background color="#aaa" gap={16} />

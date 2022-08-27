@@ -1,8 +1,9 @@
 //lib
-import { DefaultPalette } from '@fluentui/react';
+import { DefaultButton, DefaultPalette, Dialog, DialogFooter, DialogType, PrimaryButton } from '@fluentui/react';
 import { memo } from 'react'
 import { createUseStyles } from "react-jss";
 //app
+import useBoolean from '../../../common/hooks/useBoolean';
 
 
 const useStyles = createUseStyles({
@@ -26,6 +27,11 @@ const useStyles = createUseStyles({
 
 const ActionPanel = ({ onGraphSave, onBuild, onDiscard }) => {
     const classes = useStyles();
+    const { value: isDiscardDialogVisible, toggle: toggleDiscardDialog, } = useBoolean(false);
+
+    const onDiscardOk = () => {
+        onDiscard();
+    }
 
     return (
         <div className={classes.actionPanel}>
@@ -35,9 +41,26 @@ const ActionPanel = ({ onGraphSave, onBuild, onDiscard }) => {
                 <li onClick={onGraphSave}><i className="ms-Icon ms-Icon--Save"></i></li> */}
                 <li onClick={onBuild}>Build</li>
                 <li onClick={onGraphSave}>Save</li>
-                <li onClick={onDiscard}>Discard</li>
+                <li onClick={toggleDiscardDialog}>Discard</li>
             </ul>
-        </div>
+
+            <Dialog
+                hidden={!isDiscardDialogVisible}
+                onDismiss={toggleDiscardDialog}
+                dialogContentProps={{
+                    type: DialogType.normal,
+                    title: 'Discard modifications',
+                    closeButtonAriaLabel: 'Close',
+                    subText: 'Unsaved modifications will be discarded, Are you sure ?',
+                }}
+            >
+
+                <DialogFooter>
+                    <PrimaryButton onClick={onDiscardOk} text="Yes" />
+                    <DefaultButton onClick={toggleDiscardDialog} text="No" />
+                </DialogFooter>
+            </Dialog>
+        </div >
     )
 }
 
