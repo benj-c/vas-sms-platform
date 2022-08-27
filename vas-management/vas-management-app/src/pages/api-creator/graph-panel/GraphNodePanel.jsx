@@ -3,6 +3,7 @@ import { useState } from "react";
 import { createUseStyles } from "react-jss";
 //app
 import AssignNodePropPanel from './property-panels/AssignNodePropPanel'
+import CaseDefaultPropsPanel from "./property-panels/CaseDefaultPropsPanel";
 
 const CORE_NODES = [
     {
@@ -24,7 +25,7 @@ const CORE_NODES = [
         title: 'case',
         type: 'customNode',
         icon: 'Remote',
-        propsComponent: () => <div>Case</div>,
+        propsComponent: CaseDefaultPropsPanel,
     },
     {
         id: 3,

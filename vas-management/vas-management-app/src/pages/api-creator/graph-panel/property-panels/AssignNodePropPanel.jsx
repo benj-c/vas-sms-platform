@@ -30,13 +30,15 @@ const useStyles = createUseStyles({
     },
 })
 
+// data -> props: [{name, value}] || props: []
+
 const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     const classes = useStyles();
     const { control, handleSubmit, setValue } = useForm({
         defaultValues: {
         }
     });
-    const [variables, setVariables] = useState(data?.props || []);
+    const [variables, setVariables] = useState(data?.variables || []);
     const { value: isDeleteDialogVisible, toggle: toggleDeleteDialog, } = useBoolean(false);
     const [selectedVar, setSelectedVar] = useState(null);
 
@@ -61,7 +63,7 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
 
     useEffect(() => {
         if (variables.length > 0) {
-            let props = { id: node.id, data: variables }
+            let props = { id: node.id, variables: variables }
             onNodeDataChange(props);
         }
     }, [variables])

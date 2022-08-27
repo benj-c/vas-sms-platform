@@ -112,6 +112,7 @@ const Graph = () => {
             setElements((es) => es.concat(nElements));
 
             nodeData = nodeData.concat(nElements.map(e => {
+                console.log(e)
                 return {
                     id: e.id
                 }
@@ -142,17 +143,9 @@ const Graph = () => {
 
     const onNodeDataChange = props => {
         console.log(props)
-        // nodeData.filter(d => d.id == props.id)[0]?.props = props.data
-
-        // for (let i = 0; i < nodeData.length; i++) {
-        //     if (nodeData[i].id == props.id) {
-        //         nodeData[i].props = props.data;
-        //     }
-        // }
-
         nodeData = nodeData.map(d => {
             if (d.id == props.id) {
-                return { id: d.id, props: props.data }
+                return props;
             }
             return d;
         })
@@ -209,9 +202,7 @@ const Graph = () => {
     const getForm = useCallback((node) => {
         let Comp = getPropComponent(node.data.label)
         let d = nodeData.filter(n => n.id == node.id)[0];
-        // console.log(nodeData)
-        // console.log(node.id)
-        // console.log(d)
+        console.log(d, node.id)
         return <Comp node={node} data={d} onNodeDataChange={onNodeDataChange} />
     }, [elements, nodeData])
 

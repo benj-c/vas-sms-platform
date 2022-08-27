@@ -44,9 +44,9 @@ class XmlWriter {
         let xml = this.getNodeInitPart(node);
         let dt = this.getDataObj(node.id);
         console.log(dt)
-        if (dt?.props?.length > 0) {
-            for (let i = 0; i < dt.props.length; i++) {
-                let v = dt.props[i];
+        if (dt?.variables?.length > 0) {
+            for (let i = 0; i < dt.variables.length; i++) {
+                let v = dt.variables[i];
                 xml += this.getVariableXml(v.name, v.value);
             }
         }

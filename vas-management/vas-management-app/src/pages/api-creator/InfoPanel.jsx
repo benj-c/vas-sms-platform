@@ -196,7 +196,7 @@ const InfoPanel = () => {
                             <Stack gap={8} horizontal>
                                 <PrimaryButton onClick={onDeploy} iconProps={{ iconName: 'Rocket' }}>Deploy</PrimaryButton>
                                 <PrimaryButton onClick={onCheckout} iconProps={{ iconName: 'Down' }}>Checkout</PrimaryButton>
-                                <DefaultButton onClick={toggleIsCalloutVisible} iconProps={{ iconName: 'Cancel' }}>Close</DefaultButton>
+                                <DefaultButton onClick={toggleIsCalloutVisible} iconProps={{ iconName: 'Cancel' }}>Dismiss</DefaultButton>
                             </Stack>
                         </div>
                     </FocusTrapCallout>

@@ -95,11 +95,11 @@ export const toJsonGraph = (xml) => {
     const getDataObj = (blk) => {
         let d = {
             id: blk.getAttribute("id"),
-            props: []
+            variables: []
         }
         let variables = blk.getElementsByTagName('variable');
         for (let i = 0; i < variables.length; i++) {
-            d.props.push({
+            d.variables.push({
                 name: variables[i].getAttribute("name"),
                 value: variables[i].textContent
             })
@@ -141,13 +141,13 @@ export const toJsonGraph = (xml) => {
                     let cases = blk.getElementsByTagName("case");
                     for (let j = 0; j < cases.length; j++) {
                         nodes.push(createNodeByTag(cases[j]));
-                        data.push(getDataObj(blk));
+                        data.push(getDataObj(cases[j]));
                     }
 
                     let defaultCase = blk.getElementsByTagName("default");
                     if (defaultCase && defaultCase[0]) {
                         nodes.push(createNodeByTag(defaultCase[0]));
-                        data.push(getDataObj(blk));
+                        data.push(getDataObj(defaultCase[0]));
                     }
                 } else {
                     nodes.push(createNodeByTag(blk));
