@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Panel, PanelType, Text } from "@fluentui/react";
 import ReactFlow, { Background, Controls, addEdge, removeElements, updateEdge, isNode } from "react-flow-renderer"
 import { useRecoilValue, useRecoilState } from 'recoil'
+import { useHistory } from "react-router-dom";
 //app
 import ActionPanel from './ActionPanel'
 import ButtonEdge from "./node/ButtonEdge";
@@ -32,6 +33,7 @@ let nodeData = [];
 const Graph = () => {
     const graphWrapper = useRef(null);
     const handleType = useRef('')
+    const history = useHistory();
 
     //state
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
@@ -187,6 +189,10 @@ const Graph = () => {
         }
     }
 
+    const onDiscard = () => {
+        history.push(`/api-creator?ref=${graphApi.id}&commit=${graphApi.commitId}`)
+    }
+
     const getNextNodeId = () => {
         if (elements.length == 2) return 1;
         let mx = -1;
@@ -279,7 +285,11 @@ const Graph = () => {
                 onElementClick={onElementClick}
                 onPaneClick={onPaneClick}
             >
-                <ActionPanel onGraphSave={onGraphSave} onBuild={onGraphBuild} />
+                <ActionPanel 
+                onGraphSave={onGraphSave} 
+                onBuild={onGraphBuild} 
+                onDiscard={onDiscard}
+                />
                 <Controls />
                 <Background color="#aaa" gap={16} />
             </ReactFlow>

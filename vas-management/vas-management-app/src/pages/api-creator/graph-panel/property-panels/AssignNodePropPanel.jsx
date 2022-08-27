@@ -12,15 +12,25 @@ const useStyles = createUseStyles({
         borderRadius: '0.25rem',
         margin: '0.75rem 0',
         borderBottom: '2px solid transparent',
+        display: 'grid',
+        gridTemplateColumns: '95% 5%',
+        alignItems: 'center',
         '&:hover': {
             borderBottomColor: DefaultPalette.themePrimary,
+            '& i': {
+                display: 'block'
+            }
+        },
+        '& i': {
+            display: 'none',
+            cursor: 'pointer'
         }
     },
 })
 
 const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     const classes = useStyles();
-    const { control, handleSubmit } = useForm({
+    const { control, handleSubmit, setValue } = useForm({
         defaultValues: {
             // name: node.data.name,
         }
@@ -43,6 +53,11 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
         }
     }, [variables])
 
+    const onEditVariableClick = (item) => {
+        setValue('name', item.name);
+        setValue('value', item.value);
+    }
+
     return (
         <div>
             {/* <Text variant='mediumPlus' style={{ textTransform: 'capitalize' }}>{node.data.label} node</Text> */}
@@ -52,9 +67,14 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
             <ul>
                 {variables.length > 0 && variables.map((item, key) => (
                     <li key={key} className={classes.varItem}>
-                        Variable name: {item.name}
-                        <br />
-                        Value: {item.value}
+                        <div>
+                            Variable name: {item.name}
+                            <br />
+                            Value: {item.value}
+                        </div>
+                        <div>
+                            <i class="ms-Icon ms-Icon--Settings" aria-hidden="true" onClick={() => onEditVariableClick(item)}></i>
+                        </div>
                     </li>
                 ))}
             </ul>

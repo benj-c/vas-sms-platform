@@ -27,7 +27,8 @@ const initialElements = {
             position: { x: 1025, y: 225 },
         },
     ],
-    edges: []
+    edges: [],
+    data: [],
 };
 
 const useStyles = createUseStyles({

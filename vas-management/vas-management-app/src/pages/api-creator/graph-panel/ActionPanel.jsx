@@ -1,4 +1,5 @@
 //lib
+import { DefaultPalette } from '@fluentui/react';
 import { memo } from 'react'
 import { createUseStyles } from "react-jss";
 //app
@@ -13,7 +14,7 @@ const useStyles = createUseStyles({
         '& ul': {
             '& li': {
                 display: 'inline',
-                background: 'var(--themePrimary)',
+                background: DefaultPalette.themePrimary,
                 margin: '0.25rem',
                 padding: '0.15rem 0.25rem',
                 cursor: 'pointer',
@@ -23,7 +24,7 @@ const useStyles = createUseStyles({
     }
 })
 
-const ActionPanel = ({ onGraphSave, onBuild }) => {
+const ActionPanel = ({ onGraphSave, onBuild, onDiscard }) => {
     const classes = useStyles();
 
     return (
@@ -34,6 +35,7 @@ const ActionPanel = ({ onGraphSave, onBuild }) => {
                 <li onClick={onGraphSave}><i className="ms-Icon ms-Icon--Save"></i></li> */}
                 <li onClick={onBuild}>Build</li>
                 <li onClick={onGraphSave}>Save</li>
+                <li onClick={onDiscard}>Discard</li>
             </ul>
         </div>
     )

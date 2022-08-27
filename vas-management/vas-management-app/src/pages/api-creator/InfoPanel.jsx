@@ -189,13 +189,14 @@ const InfoPanel = () => {
                         onDismiss={toggleIsCalloutVisible}
                     >
                         <div style={{ color: '#e7e7e7', padding: '1rem', border: '1px solid var(--themePrimary)' }}>
-                            <Text block variant="mediumPlus">API Deployment</Text>
-                            <Text block variant="small">Deploy this API as the active API, Note that currently deployed API will be disabled once this API is deployed</Text>
+                            <Text block variant="mediumPlus">API Actions</Text>
+                            <br />
+                            <Text block variant="small">Selected API: v{selectedApiVersion.version}</Text>
                             <br />
                             <Stack gap={8} horizontal>
-                                <PrimaryButton onClick={onDeploy}>Deploy</PrimaryButton>
-                                <PrimaryButton onClick={onCheckout}>Checkout</PrimaryButton>
-                                <DefaultButton onClick={toggleIsCalloutVisible}>Cancel</DefaultButton>
+                                <PrimaryButton onClick={onDeploy} iconProps={{ iconName: 'Rocket' }}>Deploy</PrimaryButton>
+                                <PrimaryButton onClick={onCheckout} iconProps={{ iconName: 'Down' }}>Checkout</PrimaryButton>
+                                <DefaultButton onClick={toggleIsCalloutVisible} iconProps={{ iconName: 'Cancel' }}>Close</DefaultButton>
                             </Stack>
                         </div>
                     </FocusTrapCallout>
