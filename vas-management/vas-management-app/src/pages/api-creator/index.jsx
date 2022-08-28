@@ -32,6 +32,10 @@ const initialElements = {
 };
 
 const useStyles = createUseStyles({
+    page: {
+        paddingBottom: '1rem',
+        height: '90vh',
+    },
     graphEditorRoot: {
         display: 'grid',
         gridTemplateColumns: '10% 90%',
@@ -90,7 +94,7 @@ const ApiCreator = () => {
     }
 
     return (
-        <>
+        <div className={classes.page}>
             {menu.title === "Designer" && (
                 <div className={classes.graphEditorRoot}>
                     {selectedApi && selectedApi.graphElements.nodes.length > 0 && (
@@ -105,7 +109,7 @@ const ApiCreator = () => {
             {menu.title === "Details" && selectedApi && (
                 <InfoPanel />
             )}
-        </>
+        </div>
     )
 }
 

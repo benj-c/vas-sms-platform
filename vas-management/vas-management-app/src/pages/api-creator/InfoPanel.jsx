@@ -14,7 +14,7 @@ const useStyles = createUseStyles({
         color: '#e7e7e7',
         display: 'grid',
         gridTemplateColumns: '20% 80%',
-        height: '89vh',
+        height: '100%',
         padding: '1rem',
         borderRadius: '0.35rem',
     },
@@ -167,7 +167,10 @@ const InfoPanel = () => {
         }
 
         return (
-            <>
+            <div style={{
+                height: '90vh',
+                overflowY: 'auto'
+            }}>
                 <Text variant="large">API Change History</Text>
                 <div style={{ marginTop: '1rem' }}>
                     <DetailsList
@@ -201,7 +204,7 @@ const InfoPanel = () => {
                         </div>
                     </FocusTrapCallout>
                 )}
-            </>
+            </div>
         )
     }
 

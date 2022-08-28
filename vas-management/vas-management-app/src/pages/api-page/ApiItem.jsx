@@ -1,4 +1,4 @@
-import { Persona, PersonaPresence, PersonaSize } from "@fluentui/react";
+import { Persona, PersonaSize } from "@fluentui/react";
 import { createUseStyles } from "react-jss";
 
 const useStyles = createUseStyles({

@@ -32,7 +32,7 @@ const CORE_NODES = [
         title: 'default',
         type: 'customNode',
         icon: 'Remote',
-        propsComponent: () => <div>Default</div>,
+        propsComponent: CaseDefaultPropsPanel,
     },
 ]
 

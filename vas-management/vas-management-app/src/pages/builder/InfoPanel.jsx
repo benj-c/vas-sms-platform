@@ -135,9 +135,9 @@ const InfoPanel = ({ serviceId }) => {
                             <ActionButton
                                 iconProps={{ iconName: 'ChromeBack' }}
                                 style={{ marginTop: '2rem' }}
-                                onClick={() => history.push("/library")}
+                                onClick={() => history.push("/services")}
                             >
-                                Library
+                                Services
                             </ActionButton>
                             <TooltipHost content="Service settings" id={"ss_settings"}>
                                 <IconButton

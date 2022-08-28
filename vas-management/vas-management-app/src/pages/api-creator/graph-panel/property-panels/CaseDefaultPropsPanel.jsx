@@ -31,24 +31,26 @@ const CaseDefaultPropsPanel = ({ node, onNodeDataChange, data }) => {
 
     return (
         <div>
-            <div>
-                <form style={{ marginTop: '1rem' }}>
-                    <div style={{ margin: '1rem 0' }}>
-                        <Controller
-                            name="expression"
-                            control={control}
-                            rules={{ required: true }}
-                            render={({ field }) => <TextField
-                                label="Condition/Expression"
-                                {...field}
-                                multiline
-                                rows={2}
-                            />}
-                        />
-                    </div>
-                    <PrimaryButton text="Set Expression" onClick={handleSubmit(onSubmit)} />
-                </form>
-            </div>
+            {node.data.label === "case" && (
+                <div>
+                    <form style={{ marginTop: '1rem' }}>
+                        <div style={{ margin: '1rem 0' }}>
+                            <Controller
+                                name="expression"
+                                control={control}
+                                rules={{ required: true }}
+                                render={({ field }) => <TextField
+                                    label="Condition/Expression"
+                                    {...field}
+                                    multiline
+                                    rows={2}
+                                />}
+                            />
+                        </div>
+                        <PrimaryButton text="Set Expression" onClick={handleSubmit(onSubmit)} />
+                    </form>
+                </div>
+            )}
             <AssignNodePropPanel
                 node={node}
                 onNodeDataChange={onVariableDataChange}

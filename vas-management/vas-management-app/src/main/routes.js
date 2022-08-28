@@ -2,8 +2,8 @@
 import { lazy } from "react"
 //app
 const Home = lazy(() => import(`../pages/home`))
-// const Dashboard = lazy(() => import(`../pages/Dashboard`))
-const Library = lazy(() => import(`../pages/library`))
+const ApiGallary = lazy(() => import(`../pages/api-page`))
+const Library = lazy(() => import(`../pages/services-page`))
 const Builder = lazy(() => import(`../pages/builder`))
 const Settings = lazy(() => import(`../pages/settings`))
 const Login = lazy(() => import(`../pages/login`))
@@ -52,8 +52,8 @@ export const routes = [
     },
     {
         id: 3,
-        path: "/library",
-        name: "Library",
+        path: "/services",
+        name: "Services",
         description: "Service Library",
         exact: true,
         main: () => <Library />,
@@ -63,18 +63,32 @@ export const routes = [
             icon: "Library"
         },
         menu: [
-            {
-                id: 0,
-                title: "Services",
-            },
-            {
-                id: 1,
-                title: "APIs",
-            },
+            // {
+            //     id: 0,
+            //     title: "Services",
+            // },
+            // {
+            //     id: 1,
+            //     title: "APIs",
+            // },
         ]
     },
     {
         id: 4,
+        path: "/apis",
+        name: "APIs",
+        description: "API Gallary",
+        exact: true,
+        main: () => <ApiGallary />,
+        scope: [],
+        sideBarProps: {
+            pos: "top",
+            icon: "Embed"
+        },
+        menu: []
+    },
+    {
+        id: 5,
         path: "/service-creator",
         name: "New",
         description: "Service Creator",
@@ -88,7 +102,7 @@ export const routes = [
         menu: []
     },
     {
-        id: 5,
+        id: 6,
         path: "/service",
         name: "Service",
         description: "Service Information",
@@ -104,7 +118,7 @@ export const routes = [
         ]
     },
     {
-        id: 6,
+        id: 7,
         path: "/settings",
         name: "Settings",
         description: "Settings",
@@ -127,7 +141,7 @@ export const routes = [
         ]
     },
     {
-        id: 7,
+        id: 8,
         path: "/api-creator",
         name: "api creator",
         description: "API Creator",
@@ -151,7 +165,7 @@ export const routes = [
         ]
     },
     {
-        id: 8,
+        id: 9,
         path: "/sms-history",
         name: "History",
         description: "SMS History Viewer",

@@ -22,8 +22,9 @@ const UsageStats = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        let interval = setInterval(() => loadStats(), (3000))
-        return () => clearInterval(interval)
+        // let interval = setInterval(() => loadStats(), (3000))
+        // return () => clearInterval(interval)
+        loadStats();
     }, [])
 
     const loadStats = () => {

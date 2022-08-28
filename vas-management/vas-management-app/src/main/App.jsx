@@ -52,7 +52,7 @@ const App = () => {
         } else {
             if (loggedIn) {
                 //check if user has access to page
-                return <Redirect to="/library" />
+                return <Redirect to="/home" />
             } else {
                 return <route.main {...props} />
             }
