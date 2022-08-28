@@ -2,75 +2,7 @@
 import { useState } from "react";
 import { createUseStyles } from "react-jss";
 //app
-import AssignNodePropPanel from './property-panels/AssignNodePropPanel'
-import CaseDefaultPropsPanel from "./property-panels/CaseDefaultPropsPanel";
-import FunctionNodePropPanel from "./property-panels/FunctionNodePropPanel";
-
-const CORE_NODES = [
-    {
-        id: 0,
-        title: 'assign',
-        type: 'customNode',
-        icon: 'Variable',
-        propsComponent: AssignNodePropPanel,
-    },
-    {
-        id: 1,
-        title: 'branch',
-        type: 'customNode',
-        icon: 'BranchFork2',
-        propsComponent: () => <div>Switch</div>,
-    },
-    {
-        id: 2,
-        title: 'case',
-        type: 'customNode',
-        icon: 'Remote',
-        propsComponent: CaseDefaultPropsPanel,
-    },
-    {
-        id: 3,
-        title: 'default',
-        type: 'customNode',
-        icon: 'Remote',
-        propsComponent: CaseDefaultPropsPanel,
-    },
-]
-
-const FUNCTIONS = [
-    {
-        id: 0,
-        title: 'func',
-        functionType: 'script',
-        type: 'customNode',
-        icon: 'JavaScriptLanguage',
-        propsComponent: FunctionNodePropPanel,
-    },
-    {
-        id: 1,
-        title: 'func',
-        functionType: 'http',
-        type: 'customNode',
-        icon: 'Remote',
-        propsComponent: FunctionNodePropPanel,
-    },
-    {
-        id: 2,
-        title: 'func',
-        functionType: 'invoke',
-        type: 'customNode',
-        icon: 'Remote',
-        propsComponent: FunctionNodePropPanel,
-    },
-    {
-        id: 3,
-        title: 'func',
-        functionType: 'email',
-        type: 'customNode',
-        icon: 'Mail',
-        propsComponent: FunctionNodePropPanel,
-    },
-]
+import { CORE_NODES, FUNCTIONS } from "./NodeTypes"
 
 const useStyles = createUseStyles({
     nodePanel: {
@@ -113,19 +45,19 @@ const useStyles = createUseStyles({
     },
 })
 
-export const getPropComponent = name => {
-    if (name) {
-        console.log(name)
-        if (name == 'func') {
+export const getPropComponent = node => {
+    if (node) {
+        console.log(node)
+        if (node.data.label == 'func') {
             for (let i = 0; i < FUNCTIONS.length; i++) {
-                if (FUNCTIONS[i].title == name) {
+                if (FUNCTIONS[i].title == node.data.label) {
                     let c = FUNCTIONS[i].propsComponent;
                     return c;
                 }
             }
         } else {
             for (let i = 0; i < CORE_NODES.length; i++) {
-                if (CORE_NODES[i].title == name) {
+                if (CORE_NODES[i].title == node.data.label) {
                     let c = CORE_NODES[i].propsComponent;
                     return c;
                 }
@@ -150,7 +82,7 @@ const GraphNodePanel = () => {
                 {CORE_NODES.map(node => (
                     <li key={node.id} onDragStart={event => onDragStart(event, node)} draggable>
                         <i className={`ms-Icon ms-Icon--${node.icon}`} aria-hidden="true"></i>
-                        <span style={{textTransform: 'capitalize'}}>
+                        <span style={{ textTransform: 'capitalize' }}>
                             {node.title}
                         </span>
                     </li>
@@ -161,7 +93,7 @@ const GraphNodePanel = () => {
                 {functionNodes.map(node => (
                     <li key={node.id} onDragStart={event => onDragStart(event, node)} draggable>
                         <i className={`ms-Icon ms-Icon--${node.icon}`} aria-hidden="true"></i>
-                        <span style={{textTransform: 'capitalize'}}>
+                        <span style={{ textTransform: 'capitalize' }}>
                             {node.functionType}
                         </span>
                     </li>

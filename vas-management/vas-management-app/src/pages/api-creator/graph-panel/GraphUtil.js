@@ -109,6 +109,8 @@ export const toJsonGraph = (xml) => {
 
         if (blk.nodeName === "case") {
             d.expression = blk.getElementsByTagName("expression")[0]?.textContent;
+        } else if (blk.nodeName === "func") {
+            
         }
         return d;
     }
