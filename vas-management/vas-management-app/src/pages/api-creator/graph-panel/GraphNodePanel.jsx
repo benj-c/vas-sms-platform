@@ -4,6 +4,7 @@ import { createUseStyles } from "react-jss";
 //app
 import AssignNodePropPanel from './property-panels/AssignNodePropPanel'
 import CaseDefaultPropsPanel from "./property-panels/CaseDefaultPropsPanel";
+import FunctionNodePropPanel from "./property-panels/FunctionNodePropPanel";
 
 const CORE_NODES = [
     {
@@ -39,31 +40,35 @@ const CORE_NODES = [
 const FUNCTIONS = [
     {
         id: 0,
-        title: 'Function:Script',
+        title: 'func',
+        functionType: 'script',
         type: 'customNode',
         icon: 'JavaScriptLanguage',
-        propsComponent: () => <div>Function:Script</div>,
+        propsComponent: FunctionNodePropPanel,
     },
     {
         id: 1,
-        title: 'Function:HTTP',
+        title: 'func',
+        functionType: 'http',
         type: 'customNode',
         icon: 'Remote',
-        propsComponent: () => <div>Function:HTTP</div>,
+        propsComponent: FunctionNodePropPanel,
     },
     {
         id: 2,
-        title: 'Function:Invoke',
+        title: 'func',
+        functionType: 'invoke',
         type: 'customNode',
         icon: 'Remote',
-        propsComponent: () => <div>Function:Invoke</div>,
+        propsComponent: FunctionNodePropPanel,
     },
     {
         id: 3,
-        title: 'Function:Email',
+        title: 'func',
+        functionType: 'email',
         type: 'customNode',
         icon: 'Mail',
-        propsComponent: () => <div>Function:Email</div>,
+        propsComponent: FunctionNodePropPanel,
     },
 ]
 
@@ -110,7 +115,7 @@ const useStyles = createUseStyles({
 
 export const getPropComponent = name => {
     if (name) {
-        // console.log(name)
+        console.log(name)
         if (name == 'func') {
             for (let i = 0; i < FUNCTIONS.length; i++) {
                 if (FUNCTIONS[i].title == name) {
@@ -157,7 +162,7 @@ const GraphNodePanel = () => {
                     <li key={node.id} onDragStart={event => onDragStart(event, node)} draggable>
                         <i className={`ms-Icon ms-Icon--${node.icon}`} aria-hidden="true"></i>
                         <span style={{textTransform: 'capitalize'}}>
-                            {node.title.split(':')[1]}
+                            {node.functionType}
                         </span>
                     </li>
                 ))}

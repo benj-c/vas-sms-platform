@@ -43,6 +43,7 @@ const createNode = (id, data) => {
         data: {
             label: data.title,
             icon: data.icon,
+            functionType: data.functionType,
         },
     };
 }
@@ -87,6 +88,7 @@ export const toJsonGraph = (xml) => {
             data: {
                 label: tag.getAttribute("type"),
                 icon: tag.getAttribute("icon"),
+                functionType: tag.getElementsByTagName("functionType")[0]?.textContent,
             },
             position: { x: p[0], y: p[1] }
         }

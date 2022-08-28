@@ -58,6 +58,7 @@ class XmlWriter {
     }
     getFunctionXml(node, next) {
         let xml = this.getNodeInitPart(node);
+        xml += `<functionType>${node.data.functionType}</functionType>`;
         xml += this.getNodeNextPart(next)
         xml += `</block>`
         return xml;
@@ -103,7 +104,7 @@ class XmlWriter {
             let ed = this.edges[i];
             let node = this.getNodeById(ed.source)
             // if (node.data.label != 'Case' && node.data.label != 'Default') {
-            if (node.data.label.startsWith('Function')) {
+            if (node.data.label === 'func') {
                 xml += this.getFunctionXml(node, ed.target);
             } else {
                 switch (node.data.label) {
