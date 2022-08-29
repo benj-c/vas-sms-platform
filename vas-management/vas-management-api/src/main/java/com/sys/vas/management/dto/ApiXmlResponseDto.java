@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApiXmlResponseDto {
-    private long id;
+    private Long id;
     private String name;
     private String description;
     private String version;
@@ -16,4 +16,7 @@ public class ApiXmlResponseDto {
     private String commitMessage;
     private Boolean isActive;
     private String xml;
+    private Long totalRequestsCount;
+    private Long avgResTime;
+    private Long errorCount;
 }

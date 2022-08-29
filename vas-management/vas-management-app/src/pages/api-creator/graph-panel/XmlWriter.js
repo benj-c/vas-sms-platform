@@ -29,7 +29,7 @@ class XmlWriter {
         return `<block id="${node.id}" type="${lbl}" nodeCType="${node.type}" pos="${this.getPos(node)}" icon="${node.data.icon}">`
     }
     getNodeNextPart(next) {
-        return `<next-node>${next}</next-node>`;
+        return `<next-node>${next === "return" ? "END" : next}</next-node>`;
     }
     getVariableXml(variables) {
         let xml = "";
@@ -50,7 +50,6 @@ class XmlWriter {
     getAssignXml(node, next) {
         let xml = this.getNodeInitPart(node);
         let dt = this.getDataObj(node.id);
-        console.log(dt)
         xml += this.getVariableXml(dt?.variables || []);
         xml += this.getNodeNextPart(next)
         xml += `</block>`
@@ -58,7 +57,6 @@ class XmlWriter {
     }
     getFunctionXml(node, next) {
         let dt = this.getDataObj(node.id);
-        console.log(dt)
         let xml = this.getNodeInitPart(node);
         if (dt.funcProps) {
             for (let i = 0; i < dt.funcProps.length; i++) {
@@ -118,7 +116,6 @@ class XmlWriter {
         for (let i = 0; i < this.edges.length; i++) {
             let ed = this.edges[i];
             let node = this.getNodeById(ed.source)
-            // if (node.data.label != 'Case' && node.data.label != 'Default') {
             if (node.data.label === 'func') {
                 xml += this.getFunctionXml(node, ed.target);
             } else {
@@ -135,7 +132,6 @@ class XmlWriter {
                         break;
                 }
             }
-            // }
         }
         xml += this.getSwitchXml();
         xml += this.getReturnXml(this.nodes.filter(n => n.id === "return")[0]);

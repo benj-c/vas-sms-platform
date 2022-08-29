@@ -33,6 +33,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -75,9 +76,24 @@ public class Kernel {
         log.info("Kernal thread terminated. [" + thrdId + "]");
     }
 
+    /**
+     * @param currentBlock
+     * @param bTag
+     * @param globalBaseTag
+     * @param sessionVariables
+     * @param apiRequest
+     * @param lastResponse
+     * @return
+     */
     @SuppressWarnings("unchecked")
-    private JSONObject executeFunctionBlock(Element currentBlock, String bTag, String globalBaseTag,
-                                            JSONObject sessionVariables, JSONObject apiRequest, JSONObject lastResponse) {
+    private JSONObject executeFunctionBlock(
+            Element currentBlock,
+            String bTag,
+            String globalBaseTag,
+            JSONObject sessionVariables,
+            JSONObject apiRequest,
+            JSONObject lastResponse
+    ) {
         JSONObject funcResponse = new JSONObject();
         JSONParser parser = new JSONParser();
         String className = currentBlock.getElementsByTagName("class").item(0).getTextContent();
@@ -138,14 +154,44 @@ public class Kernel {
         return funcResponse;
     }
 
-    private void executeAssignBlock(Element currentBlock, String bTag, String globalBaseTag,
-                                    JSONObject sessionVariables, JSONObject apiRequest, JSONObject lastResponse) throws Exception {
+    /**
+     * @param currentBlock
+     * @param bTag
+     * @param globalBaseTag
+     * @param sessionVariables
+     * @param apiRequest
+     * @param lastResponse
+     * @throws Exception
+     */
+    private void executeAssignBlock(
+            Element currentBlock,
+            String bTag,
+            String globalBaseTag,
+            JSONObject sessionVariables,
+            JSONObject apiRequest,
+            JSONObject lastResponse
+    ) throws Exception {
         NodeList nListvar = currentBlock.getElementsByTagName("variable");
         setPropertyValues(nListvar, bTag, globalBaseTag, sessionVariables, apiRequest, lastResponse);
     }
 
-    private void setPropertyValues(NodeList nListvar, String bTag, String globalBaseTag, JSONObject sessionVariables,
-                                   JSONObject apiRequest, JSONObject lastResponse) throws Exception {
+    /**
+     * @param nListvar
+     * @param bTag
+     * @param globalBaseTag
+     * @param sessionVariables
+     * @param apiRequest
+     * @param lastResponse
+     * @throws Exception
+     */
+    private void setPropertyValues(
+            NodeList nListvar,
+            String bTag,
+            String globalBaseTag,
+            JSONObject sessionVariables,
+            JSONObject apiRequest,
+            JSONObject lastResponse
+    ) throws Exception {
         if (nListvar != null) {
             SimpleBindings sb = new SimpleBindings();
             String tempLogInfo = "ListOf[property:value]|";
@@ -169,8 +215,24 @@ public class Kernel {
         }
     }
 
-    private String executeBranchBlock(Element currentBlock, String bTag, String globalBaseTag,
-                                      JSONObject sessionVariables, JSONObject apiRequest, JSONObject lastResponse) throws Exception {
+    /**
+     * @param currentBlock
+     * @param bTag
+     * @param globalBaseTag
+     * @param sessionVariables
+     * @param apiRequest
+     * @param lastResponse
+     * @return
+     * @throws Exception
+     */
+    private String executeBranchBlock(
+            Element currentBlock,
+            String bTag,
+            String globalBaseTag,
+            JSONObject sessionVariables,
+            JSONObject apiRequest,
+            JSONObject lastResponse
+    ) throws Exception {
         String nextBlock = null;
         NodeList nListparam = currentBlock.getElementsByTagName("case");
         boolean matchCase = false;
@@ -204,9 +266,26 @@ public class Kernel {
         return nextBlock;
     }
 
+    /**
+     * @param ele1
+     * @param bTag
+     * @param globalBaseTag
+     * @param sessionVariables
+     * @param apiRequest
+     * @param lastResponse
+     * @param apiResponse
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
-    private void setApiResponse(Element ele1, String bTag, String globalBaseTag, JSONObject sessionVariables,
-                                JSONObject apiRequest, JSONObject lastResponse, JSONObject apiResponse) throws Exception {
+    private void setApiResponse(
+            Element ele1,
+            String bTag,
+            String globalBaseTag,
+            JSONObject sessionVariables,
+            JSONObject apiRequest,
+            JSONObject lastResponse,
+            JSONObject apiResponse
+    ) throws Exception {
         NodeList nListparam = ele1.getElementsByTagName("outputparams");
         for (int j = 0; j < nListparam.getLength(); j++) {
             Node pNode = nListparam.item(j);
@@ -262,7 +341,12 @@ public class Kernel {
         }
     }
 
+    /**
+     * @param inParams
+     * @return
+     */
     @SuppressWarnings("unchecked")
+    @Transactional
     public JSONObject executeAppLogic(JSONObject inParams) {
         // Initializing attributes..
         JSONObject lastResponse = new JSONObject();
@@ -286,6 +370,7 @@ public class Kernel {
         String bTag = api + "|" + apiRequest.get("crId") + "|";
         globalBaseTag = bTag;
         Document doc = null;
+        boolean hasError = false;
         try {
             log.info(bTag + "Start executing request....");
             sessionVariables.clear();
@@ -296,7 +381,8 @@ public class Kernel {
                 ApiHistoryEntity scapi = acApi.findActiveApiByName(api).orElseThrow(() -> new ApiNotFoundException("Service creater Api [" + api + "] is not found."));
                 if (scapi.getXml() == null) {
                     throw new ApiNotFoundException("Service creater Api [" + api + "] XML is not available.");
-                };
+                }
+                ;
                 log.info("|Found API:{}, Commit:{}, Version:{}", api, scapi.getCommitId(), scapi.getVersion());
                 doc = dBuilder.parse(new ByteArrayInputStream(scapi.getXml().getBytes()));
                 log.info(bTag + "|Loading api XML to memory from DB");
@@ -340,7 +426,6 @@ public class Kernel {
                         endofapp = false;
                         currentBlock = getBlockbyId(doc, nextBlock, globalBaseTag);
                     }
-
                 } else if (currentBlockType.equalsIgnoreCase("assign")) { // Execute
                     // Assign
                     // BLOCK
@@ -431,26 +516,31 @@ public class Kernel {
             apiResponse.put(RESP_CODE, HttpStatus.NOT_FOUND + "");
             apiResponse.put(RESP_DESC, e.getMessage());
             log.error(bTag + "|" + Constants.errorMsg, e);
+            hasError = true;
         } catch (FileNotFoundException e) {
             apiResponse.clear();
             apiResponse.put(RESP_CODE, HttpStatus.NOT_FOUND + "");
             apiResponse.put(RESP_DESC, e.getMessage());
             log.error(bTag + "|" + Constants.errorMsg, e);
+            hasError = true;
         } catch (InParamNotFoundException e) {
             apiResponse.clear();
             apiResponse.put(RESP_CODE, HttpStatus.BAD_REQUEST + "");
             apiResponse.put(RESP_DESC, e.getMessage());
             log.error(bTag + "|" + Constants.errorMsg, e);
+            hasError = true;
         } catch (MissingParamException e) {
             apiResponse.clear();
             apiResponse.put(RESP_CODE, HttpStatus.INTERNAL_SERVER_ERROR + "");
             apiResponse.put(RESP_DESC, e.getMessage());
             log.error(bTag + "|" + Constants.errorMsg, e);
+            hasError = true;
         } catch (Exception e) {
             apiResponse.clear();
             apiResponse.put(RESP_CODE, HttpStatus.INTERNAL_SERVER_ERROR + "");
             apiResponse.put(RESP_DESC, e.getMessage());
             log.error(bTag + "|" + Constants.errorMsg, e);
+            hasError = true;
         } finally {
             lastResponse = null;
             sessionVariables = null;
@@ -467,9 +557,14 @@ public class Kernel {
             retMap = retMap + "'" + entry.getKey() + "':'" + entry.getValue() + "',";
         }
         retMap = retMap.substring(0, retMap.length() - 1) + "}";
+        long totalProcessingTime = new Date().getTime() - startTimeStamp;
         log.info(bTag + "Return : " + retMap);
-        log.info(bTag + "End of executing request|Total Process Time (ms) :"
-                + ((new Date()).getTime() - startTimeStamp));
+        log.info(bTag + "End of executing request|Total Process Time (ms) :" + totalProcessingTime);
+
+
+        //update db with stats
+        acApi.updateStats(api, totalProcessingTime, hasError ? 1l : 0);
+
         ////////////////////////////////////////////
         // ***************
         lastResponse = null;
@@ -480,9 +575,13 @@ public class Kernel {
         return apiResponse;
     }
 
-    private String getVariableValue(String ip, String globalBaseTag, JSONObject sessionVariables, JSONObject apiRequest,
-                                    JSONObject lastResponse)
-            throws MissingParamException, InParamNotFoundException {
+    private String getVariableValue(
+            String ip,
+            String globalBaseTag,
+            JSONObject sessionVariables,
+            JSONObject apiRequest,
+            JSONObject lastResponse
+    ) throws MissingParamException, InParamNotFoundException {
         // ,globalBaseTag,sessionVariables,apiRequest,lastResponse)
         String out = null;
         String paramName = "";

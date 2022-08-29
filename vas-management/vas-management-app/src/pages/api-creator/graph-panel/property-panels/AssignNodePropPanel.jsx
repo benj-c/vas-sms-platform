@@ -30,8 +30,6 @@ const useStyles = createUseStyles({
     },
 })
 
-// data -> props: [{name, value}] || props: []
-
 const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     const classes = useStyles();
     const { control, handleSubmit, setValue } = useForm({
@@ -41,11 +39,6 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
     const [variables, setVariables] = useState(data?.variables || []);
     const { value: isDeleteDialogVisible, toggle: toggleDeleteDialog, } = useBoolean(false);
     const [selectedVar, setSelectedVar] = useState(null);
-
-    // props: {
-    //     id: 9,
-    //     data: [],
-    // }
 
     const onSubmit = data => {
         let isExistingVarUpdate = false;
@@ -86,6 +79,7 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
 
     return (
         <div>
+            <Text variant='medium' style={{ borderBottom: '1px solid var(--themePrimary)' }}>Variables</Text>
             <ul>
                 {variables.length > 0 && variables.map((item, key) => (
                     <li key={key} className={classes.varItem}>
@@ -128,7 +122,7 @@ const AssignNodePropPanel = ({ node, onNodeDataChange, data }) => {
                         />}
                     />
                 </div>
-                <PrimaryButton text="Set" onClick={handleSubmit(onSubmit)} />
+                <PrimaryButton text="Set Variable" onClick={handleSubmit(onSubmit)} />
             </form>
 
             <Dialog

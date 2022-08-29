@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DefaultButton, DetailsList, DetailsListLayoutMode, FocusTrapCallout, IconButton, Panel, Persona, PersonaSize, PrimaryButton, SelectionMode, Stack, Text, TooltipHost } from "@fluentui/react";
+import { DefaultButton, DetailsList, DetailsListLayoutMode, FocusTrapCallout, IconButton, Panel, Persona, PersonaSize, PrimaryButton, SelectionMode, Stack, Text, TooltipHost, DefaultPalette } from "@fluentui/react";
 import { createUseStyles } from "react-jss";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useHistory } from "react-router-dom";
@@ -34,6 +34,17 @@ const useStyles = createUseStyles({
                 background: 'rgba(255, 255, 255, 0.05)',
             }
         }
+    },
+    infoStatItem: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0.25rem',
+        background: 'rgba(255, 255, 255, 0.1)',
+        width: '15%',
+        height: '100%',
+        borderRadius: '0.25rem',
     }
 })
 
@@ -48,20 +59,11 @@ const InfoPanel = () => {
         const [selectedApiVersion, setSelectedApiVersion] = useState(null);
 
         const onMoreClick = (item) => {
-            console.log(item)
             setSelectedApiVersion(item);
             toggleIsCalloutVisible()
         }
 
         const _columns = [
-            // {
-            //     key: 'id',
-            //     name: 'ID',
-            //     fieldName: 'id',
-            //     minWidth: 20,
-            //     maxWidth: 20,
-            //     isResizable: false,
-            // },
             {
                 key: 'version',
                 name: 'Version',
@@ -95,7 +97,7 @@ const InfoPanel = () => {
                 isResizable: false,
                 onRender: (item) => {
                     return (
-                        <span style={{ 
+                        <span style={{
                             color: item.isActive ? 'var(--themePrimary)' : '',
                             fontWeight: item.isActive ? 600 : 200
                         }}>
@@ -120,7 +122,6 @@ const InfoPanel = () => {
         const [apis, setApis] = useState([]);
         const [apisLoading, setApisLoading] = useState(false);
         const apiUpdateEvent = useRecoilValue(apiUpdateEventAtom)
-        const [menu, updateMenu] = useRecoilState(selectedTopBarMenuAtom);
 
 
         useEffect(() => {
@@ -168,10 +169,10 @@ const InfoPanel = () => {
 
         return (
             <div style={{
-                height: '90vh',
-                overflowY: 'auto'
+                height: '72vh',
+                overflowY: 'auto',
             }}>
-                <Text variant="large">API Change History</Text>
+                <Text variant="medium" style={{ borderBottom: '1px solid var(--themePrimary)', paddingBottom: '0.25rem' }}>API Change History</Text>
                 <div style={{ marginTop: '1rem' }}>
                     <DetailsList
                         compact={true}
@@ -208,6 +209,46 @@ const InfoPanel = () => {
         )
     }
 
+    const ApiStatsPanel = () => {
+        return (
+            <>
+                <Text variant="medium" style={{ borderBottom: '1px solid var(--themePrimary)', paddingBottom: '0.25rem' }}>
+                    API Insights - v{graphApi.version}
+                </Text>
+                <Stack
+                    horizontal
+                    tokens={{
+                        childrenGap: 10,
+                    }}
+                    style={{
+                        display: 'flex',
+                        margin: '1rem 0 1.5rem 0',
+                        height: '4rem'
+                    }}
+                >
+                    <div className={classes.infoStatItem}>
+                        <Text variant="large" style={{ color: 'var(--themePrimary)' }}>
+                            {(graphApi.totalRequestsCount == 0 ? 0 : (graphApi.avgResTime / graphApi.totalRequestsCount) || 0).toFixed(2)} ms
+                        </Text>
+                        <Text variant="small">Response Time</Text>
+                    </div>
+                    <div className={classes.infoStatItem}>
+                        <Text variant="large" style={{ color: 'var(--themePrimary)' }}>
+                            {graphApi.totalRequestsCount}
+                        </Text>
+                        <Text variant="small">Requests</Text>
+                    </div>
+                    <div className={classes.infoStatItem}>
+                        <Text variant="large" style={{ color: 'var(--themePrimary)' }}>
+                            {graphApi.errorCount || 0}
+                        </Text>
+                        <Text variant="small">Error Count</Text>
+                    </div>
+                </Stack>
+            </>
+        )
+    }
+
     return (
         <>
             <div className={classes.infoPanelBody}>
@@ -220,7 +261,8 @@ const InfoPanel = () => {
                         alignItems: 'center',
                         // justifyContent: 'center',
                         position: 'relative',
-                        top: '15%'
+                        top: '15%',
+                        textAlign: 'center',
                     }}>
                         <Persona
                             initialsColor={`var(--themePrimary)`}
@@ -230,7 +272,10 @@ const InfoPanel = () => {
                         />
                         <br />
                         <Text variant="xLarge">{graphApi.name}</Text>
+                        <br />
                         <Text variant="mediumPlus">{graphApi.description}</Text>
+                        <br />
+                        <Text variant="small">v{graphApi.version}</Text>
                         {/* <br /> */}
                         {/* <Text variant="small">v{graphApi.version} - {graphApi.isActive ? 'Active' : 'Inactive'}</Text> */}
                         <br />
@@ -247,19 +292,20 @@ const InfoPanel = () => {
                     <div style={{
                         textAlign: 'center',
                         position: 'relative',
-                        top: '40%',
+                        top: '25%',
                     }}>
                         <Text variant="small">Commit ID</Text>
                         <br />
-                        <Text variant="mediumPlus">{graphApi.commitId}</Text>
+                        <Text variant="medium">{graphApi.commitId}</Text>
                         <br />
                         <br />
                         <Text variant="small">Commit Message</Text>
                         <br />
-                        <Text variant="mediumPlus">{graphApi.commitMessage}</Text>
+                        <Text variant="medium">{graphApi.commitMessage}</Text>
                     </div>
                 </div>
                 <div style={{ padding: '0 1rem' }}>
+                    <ApiStatsPanel />
                     <ApiVersionsPanel />
                 </div>
             </div>

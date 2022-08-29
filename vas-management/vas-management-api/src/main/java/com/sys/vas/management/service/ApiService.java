@@ -59,6 +59,9 @@ public class ApiService extends SysActionLogService {
         apiHistory.setCommitedDateTime(LocalDateTime.now());
         apiHistory.setCommitId(UUID.randomUUID().toString());
         apiHistory.setVersion(requestDto.getVersion());
+        apiHistory.setAvgResTime(0l);
+        apiHistory.setErrorCount(0l);
+        apiHistory.setTotalRequestsCount(0l);
 
         Set<ApiHistoryEntity> hiss = new HashSet<>();
         hiss.add(apiHistory);

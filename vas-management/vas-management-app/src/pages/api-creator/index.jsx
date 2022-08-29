@@ -95,7 +95,7 @@ const ApiCreator = () => {
 
     return (
         <div className={classes.page}>
-            {menu.title === "Designer" && (
+            {menu.title === "Design View" && (
                 <div className={classes.graphEditorRoot}>
                     {selectedApi && selectedApi.graphElements.nodes.length > 0 && (
                         <ReactFlowProvider>

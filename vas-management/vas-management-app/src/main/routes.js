@@ -160,7 +160,7 @@ export const routes = [
             },
             {
                 id: 1,
-                title: "Designer",
+                title: "Design View",
             },
         ]
     },

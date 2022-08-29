@@ -42,6 +42,15 @@ public class ApiHistoryEntity {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    @Column(name = "total_requests_count", nullable = false)
+    private Long totalRequestsCount;
+
+    @Column(name = "avg_res_time", nullable = false)
+    private Long avgResTime;
+
+    @Column(name = "error_count", nullable = false)
+    private Long errorCount;
+
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "api_id", referencedColumnName = "ID", nullable = false)

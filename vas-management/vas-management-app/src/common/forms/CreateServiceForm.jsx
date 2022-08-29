@@ -17,8 +17,7 @@ const CreateServiceForm = ({onDismiss}) => {
         setSubmittingTrue();
         createService(data)
             .then(res => {
-                // setSubmitDetail({ ...{ type: "success" }, ...res });
-                history.push(`/builder?ref=${res.data}`)
+                history.push(`/service?ref=${res.data}`)
             })
             .catch(e => {
                 setSubmitDetail({ ...{ type: "error" }, ...e });
