@@ -54,20 +54,28 @@ const InfoPanel = () => {
         }
 
         const _columns = [
+            // {
+            //     key: 'id',
+            //     name: 'ID',
+            //     fieldName: 'id',
+            //     minWidth: 20,
+            //     maxWidth: 20,
+            //     isResizable: false,
+            // },
             {
-                key: 'id',
-                name: 'ID',
-                fieldName: 'id',
-                minWidth: 20,
-                maxWidth: 20,
+                key: 'version',
+                name: 'Version',
+                fieldName: 'version',
+                minWidth: 50,
+                maxWidth: 50,
                 isResizable: false,
             },
             {
                 key: 'commitMessage',
                 name: 'Commit Message',
                 fieldName: 'commitMessage',
-                minWidth: 300,
-                maxWidth: 300,
+                minWidth: 400,
+                maxWidth: 400,
                 isResizable: false,
             },
             {
@@ -77,14 +85,6 @@ const InfoPanel = () => {
                 minWidth: 300,
                 maxWidth: 300,
                 isResizable: true,
-            },
-            {
-                key: 'version',
-                name: 'Version',
-                fieldName: 'version',
-                minWidth: 50,
-                maxWidth: 50,
-                isResizable: false,
             },
             {
                 key: 'isActive',

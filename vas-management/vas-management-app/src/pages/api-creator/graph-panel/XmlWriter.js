@@ -1,7 +1,7 @@
 class XmlWriter {
     constructor(currentApi, nodes, edges, data) {
         // console.log({nodes})
-        console.log({data})
+        console.log({ data })
         this.flow = currentApi;
         this.nodes = nodes;
         this.edges = edges;
@@ -57,10 +57,25 @@ class XmlWriter {
         return xml;
     }
     getFunctionXml(node, next) {
+        let dt = this.getDataObj(node.id);
+        console.log(dt)
         let xml = this.getNodeInitPart(node);
-        xml += `<functionType>${node.data.functionType}</functionType>`;
-        xml += this.getNodeNextPart(next)
-        xml += `</block>`
+        if (dt.funcProps) {
+            for (let i = 0; i < dt.funcProps.length; i++) {
+                let field = dt.funcProps[i];
+                if (field.field === 'method') {
+                    xml += `<method>${field.value}</method>`;
+                } else if (field.field === 'class') {
+                    xml += `<class>${field.value}</class>`;
+                } else if (field.field === 'functionType') {
+                    xml += `<functionType>${field.value}</functionType>`;
+                } else {
+                    xml += `<param name="${field.field}">${field.value}</param>`;
+                }
+            }
+        }
+        xml += this.getNodeNextPart(next);
+        xml += `</block>`;
         return xml;
     }
     getSwitchXml() {

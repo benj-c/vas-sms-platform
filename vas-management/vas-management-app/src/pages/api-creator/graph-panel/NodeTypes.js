@@ -38,8 +38,20 @@ export const FUNCTIONS = [
         id: 1,
         title: 'func',
         functionType: 'http',
-        class: 'rest',
-        methods: ["get", "post", "put", "delete", "patch"],
+        props: {
+            class: 'rest',
+            methods: ["get", "post", "put", "delete", "patch"],
+            fields: [
+                {
+                    name: 'url',
+                    type: 'text'
+                },
+                {
+                    name: 'body',
+                    type: 'textarea'
+                },
+            ]
+        },
         type: 'customNode',
         icon: 'Remote',
         propsComponent: FunctionNodePropPanel,

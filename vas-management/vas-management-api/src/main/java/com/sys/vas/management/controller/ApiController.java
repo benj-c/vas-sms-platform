@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RestController
@@ -142,7 +144,7 @@ public class ApiController {
     @RolesAllowed(UserRoles.USER)
     public ResponseEntity<Response> commitApi(
             @Valid @RequestBody AddApiCommitRequest addApiCommitRequest
-    ) {
+    ) throws IOException, NoSuchAlgorithmException {
         long startTime = System.currentTimeMillis();
         log.info("Initiating|commitApi");
         log.info("ReqBody|{}", addApiCommitRequest.toString());
@@ -197,7 +199,7 @@ public class ApiController {
     public ResponseEntity<Response> deployApi(
             @PathVariable("id") Long id,
             @PathVariable("commitId") String commitId
-    ) {
+    ) throws IOException {
         long startTime = System.currentTimeMillis();
         log.info("Initiating|deployApi");
         log.info("PathVar|id:{}, commitId:{}", id, commitId);

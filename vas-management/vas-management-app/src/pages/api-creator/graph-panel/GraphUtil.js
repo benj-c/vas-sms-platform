@@ -109,9 +109,32 @@ export const toJsonGraph = (xml) => {
 
         if (blk.nodeName === "case") {
             d.expression = blk.getElementsByTagName("expression")[0]?.textContent;
-        } else if (blk.nodeName === "func") {
-            
         }
+        if (blk.getAttribute("type") === "func") {
+            let props = [];
+            props.push({
+                field: 'functionType',
+                value: blk.getElementsByTagName("functionType")[0]?.textContent,
+            });
+            props.push({
+                field: 'method',
+                value: blk.getElementsByTagName("method")[0]?.textContent,
+            });
+            props.push({
+                field: 'class',
+                value: blk.getElementsByTagName("class")[0]?.textContent
+            });
+            let params = blk.getElementsByTagName("param")
+            for (let i = 0; i < params.length; i++) {
+                let param = { name: params[i].getAttribute("name"), value: params[i].textContent };
+                props.push({
+                    field: param.name,
+                    value: param.value
+                });
+            }
+            d.funcProps = props;
+        }
+        console.log(d)
         return d;
     }
 
@@ -132,6 +155,7 @@ export const toJsonGraph = (xml) => {
             edges = JSON.parse(xmlDoc.getElementsByTagName("conn")[0]?.textContent || "[]");
             for (let i = 0; i < blocks.length; i++) {
                 let blk = blocks[i];
+                console.log(blk)
                 if (blk.getAttribute("nodeCType") == "startNode") {
                     let p = blk.getAttribute("pos").split(",");
                     nodes.push({
