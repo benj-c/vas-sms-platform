@@ -49,7 +49,7 @@ const CustomNode = ({ id, data }) => {
         <>
             <div className={classes.nodeInner}>
                 <i className={`ms-Icon ms-Icon--${data.icon}`} aria-hidden="true"></i>
-                <span>{data.label.includes(':') ? data.label.split(':')[1] : data.label}</span>
+                <span>{data.label}</span>
                 {/* <br />
                 <small>{id}</small> */}
             </div>

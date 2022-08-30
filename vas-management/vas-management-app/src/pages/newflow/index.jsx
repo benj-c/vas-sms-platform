@@ -82,7 +82,7 @@ const NewFlow = () => {
         <div className={classes.nfRoot}>
             {!selectedView && (
                 <div className={classes.view1}>
-                    <h2>Let's create a new service or API</h2>
+                    <h2>Let's create a new service or workflow</h2>
                     <div style={{ height: '1px', width: '4rem', background: 'var(--themePrimary)', margin: '1rem 0' }}></div>
                     <ul>
                         <li onClick={() => setSelectedView("SERVICE")}>
@@ -91,7 +91,7 @@ const NewFlow = () => {
                         </li>
                         <li onClick={() => setSelectedView("API")}>
                             <i className="ms-Icon ms-Icon--AppIconDefaultAdd" aria-hidden="true"></i>
-                            <h3>Create API</h3>
+                            <h3>Create Workflow</h3>
                         </li>
                         <li onClick={() => fileInput.current.click()}>
                             <i className="ms-Icon ms-Icon--Upload" aria-hidden="true"></i>

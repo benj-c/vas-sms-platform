@@ -76,14 +76,14 @@ export const routes = [
     {
         id: 4,
         path: "/apis",
-        name: "APIs",
-        description: "API Gallary",
+        name: "Workflow",
+        description: "Workflow Gallary",
         exact: true,
         main: () => <ApiGallary />,
         scope: [],
         sideBarProps: {
             pos: "top",
-            icon: "Embed"
+            icon: "Dataflows"
         },
         menu: []
     },

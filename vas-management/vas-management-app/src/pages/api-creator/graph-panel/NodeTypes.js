@@ -72,4 +72,12 @@ export const FUNCTIONS = [
         icon: 'Mail',
         propsComponent: FunctionNodePropPanel,
     },
+    {
+        id: 4,
+        title: 'func',
+        functionType: 'sms',
+        type: 'customNode',
+        icon: 'Message',
+        propsComponent: FunctionNodePropPanel,
+    },
 ]

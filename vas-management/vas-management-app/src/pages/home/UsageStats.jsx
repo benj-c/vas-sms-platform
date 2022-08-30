@@ -1,4 +1,4 @@
-import { DefaultPalette, Stack, Text } from "@fluentui/react";
+import { DefaultPalette, Stack, Text, Spinner } from "@fluentui/react";
 import { useEffect, useState } from "react";
 import { createUseStyles } from "react-jss";
 import { getSmsStats } from "../../common/ApiHandler";
@@ -20,6 +20,7 @@ const useStyles = createUseStyles({
 const UsageStats = () => {
     const classes = useStyles();
     const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         // let interval = setInterval(() => loadStats(), (3000))
@@ -28,6 +29,7 @@ const UsageStats = () => {
     }, [])
 
     const loadStats = () => {
+        setLoading(true);
         getSmsStats().then(res => {
             setData([
                 {
@@ -43,26 +45,34 @@ const UsageStats = () => {
             ])
         })
             .catch(e => { })
-            .finally(() => { })
+            .finally(() => {
+                setLoading(false);
+            })
     }
 
     return (
-        <Stack>
-            <span style={{ margin: '0.75rem 0' }}>Service Statistics</span>
-            <Stack horizontal tokens={{
-                childrenGap: 10,
-            }}>
-                {data.length > 0 && data.map((item, key) => {
-                    return (
-                        <span className={classes.itemStyles} key={key}>
-                            <Text variant="medium" style={{ textTransform: 'capitalize' }}>{item.item}</Text>
-                            <Text variant="xLarge" style={{ fontWeight: 600, margin: '0rem 0' }}>{item.value}</Text>
-                            <Text variant="small">{item.desc}</Text>
-                        </span>
-                    )
-                })}
+        <>
+            <Stack>
+                <span style={{ margin: '0.75rem 0' }}>Service Statistics</span>
+                <Stack horizontal tokens={{
+                    childrenGap: 10,
+                }}>
+                    {data.length > 0 && data.map((item, key) => {
+                        return (
+                            <span className={classes.itemStyles} key={key}>
+                                <Text variant="medium" style={{ textTransform: 'capitalize' }}>{item.item}</Text>
+                                <Text variant="xLarge" style={{ fontWeight: 600, margin: '0rem 0' }}>{item.value}</Text>
+                                <Text variant="small">{item.desc}</Text>
+                            </span>
+                        )
+                    })}
+                </Stack>
             </Stack>
-        </Stack>
+
+            {loading && (
+                <Spinner label="We're loading statistics, please wait" />
+            )}
+        </>
     )
 }
 
