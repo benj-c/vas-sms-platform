@@ -12,7 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,15 +27,18 @@ public class ConfigService {
     private String endpoints;
 
     private SysConfigRepository sysConfigRepository;
+    private DataSource dataSource;
 
     /**
      *
      * @param sysConfigRepository
      */
     public ConfigService(
-            SysConfigRepository sysConfigRepository
+            SysConfigRepository sysConfigRepository,
+            DataSource dataSource
     ) {
         this.sysConfigRepository = sysConfigRepository;
+        this.dataSource = dataSource;
     }
 
     /**
@@ -69,6 +74,23 @@ public class ConfigService {
                 );
             }
         });
+
+        //check db connection
+        try {
+            boolean conn = dataSource.getConnection().isValid(1000);
+            data.add(HealthStatResponseDto.builder()
+                    .name("Database")
+                    .status(conn)
+                    .build()
+            );
+        } catch (SQLException e) {
+            e.printStackTrace();
+            data.add(HealthStatResponseDto.builder()
+                    .name("Database")
+                    .status(false)
+                    .build()
+            );
+        }
         return data;
     }
 

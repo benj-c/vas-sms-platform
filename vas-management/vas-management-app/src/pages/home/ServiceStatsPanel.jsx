@@ -42,7 +42,7 @@ const ServiceStatsPanel = () => {
         <>
             <Stack>
                 <span style={{ marginBottom: '0.75rem' }}>Service Status</span>
-                <Stack horizontal tokens={{
+                <Stack horizontal wrap tokens={{
                     childrenGap: 10,
                 }}>
                     {serviceComponents.length > 0 && !loading && serviceComponents.map((svr, key) => (

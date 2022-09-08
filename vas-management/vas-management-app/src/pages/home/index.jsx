@@ -7,7 +7,7 @@ import UsageStats from "./UsageStats";
 
 const useStyles = createUseStyles({
     pageRoot: {
-        height: '200vh',
+        height: '90vh',
         padding: '1rem',
     },
     sectionHeader: {
@@ -28,7 +28,7 @@ const Home = props => {
                         <ServiceStatsPanel />
                         <UsageStats />
                     </div>
-                    <div className="ms-Grid-col ms-sm6 ms-md8 ms-lg3">
+                    <div className="ms-Grid-col ms-sm6 ms-md8 ms-lg3" style={{ height: '90vh', overflowY: 'auto' }}>
                         <UserActionLog />
                     </div>
                 </div>

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
-@Table(name = "app_user")
+@Table(name = "user")
 @Getter
 @Setter
 public class UserEntity {

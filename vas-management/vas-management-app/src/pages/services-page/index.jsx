@@ -6,7 +6,8 @@ import ServiceContainer from "./ServiceContainer";
 const useStyles = createUseStyles({
     pageRoot: {
         padding: '1rem',
-        height: '80vh',
+        height: '90vh',
+        overflowY: 'auto'
     },
 })
 

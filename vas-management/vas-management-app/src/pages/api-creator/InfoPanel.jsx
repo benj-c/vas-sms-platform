@@ -253,7 +253,7 @@ const InfoPanel = () => {
         <>
             <div className={classes.infoPanelBody}>
                 <div style={{
-                    background: '#1f2024',
+                    background: 'rgba(255, 255, 255, 0.03)',
                 }}>
                     <div style={{
                         display: 'flex',
