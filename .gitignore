@@ -49,3 +49,5 @@ vas-management/vas-management-.idea
 vas-management/vas-management-app/node_modules
 vas-management/vas-management-app/yarn.lock
 vas-management/vas-management-app/yarn-error.txt
+
+_test
